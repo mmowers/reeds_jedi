@@ -1,7 +1,10 @@
 from __future__ import division
 import gdxpds
 import pandas as pd
-import openpyxl as opx
+import win32com.client as win32
+import os
+
+this_dir = os.path.dirname(os.path.realpath(__file__))
 
 #get reeds output data
 dfs = gdxpds.to_dataframes(r"C:\Users\mmowers\Projects\JEDI\reeds_jedi\gdx\JediWind.gdx")
@@ -16,12 +19,6 @@ df = pd.merge(left=df_cap, right=df_cost, how='outer', on=['cat','c','windtype',
 #convert costs to 2015$
 df['cost'] = df['cost']/0.796636801524834
 
-#now turn capital and o&m costs and capacities into separate columns to bring into the same row
-df_capital = df[df['cat'] == 'Capital']
-df_om = df[df['cat'] == 'OM']
-df = pd.merge(left=df_capital, right=df_om, how='outer', on=['c','windtype', 'n', 'year'], sort=False)
-df.rename(columns={'capacity_x': 'capacity_capital', 'cost_x':'cost_capital', 'capacity_y': 'capacity_om', 'cost_y':'cost_om'}, inplace=True)
-
 #merge with states
 df_hierarchy = pd.read_csv('hierarchy.csv')
 df = pd.merge(left=df, right=df_hierarchy, how='left', on=['n'], sort=False)
@@ -32,19 +29,34 @@ df = df[df['st'] != 'MEX']
 df = df[df['year'] > 2016]
 
 #group and sum
-df = df.groupby(['st', 'year'], as_index=False).sum()
+df = df.groupby(['cat', 'n', 'st', 'year'], as_index=False).sum()
 
-#now, for each row, open jedi workbook, fill in new capital and o&m cost, and get associated economic impact.
+#add column for price ($/kW)
+df['price'] = df['cost']/df['capacity']/1000
+
+
+#add columns for 
+out_cols = ['jobs_direct', 'jobs_indirect', 'jobs_induced',
+            'earnings_direct', 'earnings_indirect', 'earnings_induced',
+            'output_direct', 'output_indirect', 'output_induced',
+            'value_add_direct', 'value_add_indirect', 'value_add_induced']
+df = df.reindex(columns=df.columns.values.tolist() + out_cols)
+
 #first, open jedi workbook
-wb = opx.load_workbook(filename = r"C:\Users\mmowers\Projects\JEDI\reeds_jedi\jedi_models\01D_JEDI_Land-based_Wind_Model_rel._W12.23.16.xlsm")
-wb_in = wb['ProjectData']
-wb_out = wb['SummaryResults']
-for index, row in df.iterrows():
-    if pd.notnull(row['cost_capital']):
-        capital_cost = row['cost_capital']/row['capacity_capital']
-        wb_in['B20'] = capital_cost
-        
-    if pd.notnull(row['cost_om']):
-        om_cost = row['cost_om']/row['capacity_om']
-        wb_in['B21'] = om_cost
-    break
+excel = win32.Dispatch('Excel.Application')
+wb = excel.Workbooks.Open(this_dir + r'/jedi_models/01D_JEDI_Land-based_Wind_Model_rel._W12.23.16.xlsm')
+ws_in = wb.Worksheets('ProjectData')
+ws_out = wb.Worksheets('SummaryResults')
+#now, fill in new capital and o&m cost, and get associated economic impact.
+for i, r in df.iterrows():
+    print(str(i) + '/'+str(len(df.index)))
+    if r['cat']=='Capital':
+        ws_in.Range('B20').Value = r['price']
+        out_row_start = 28
+    elif r['cat']=='OM':
+        ws_in.Range('B21').Value = r['price']
+        out_row_start = 34
+    for col in range(4):
+        for row in range(3):
+            df.iloc[i,7 + col*3 + row] = ws_out.Cells(out_row_start + row, 2 + col).Value
+wb.Close(False)
