@@ -1,0 +1,5 @@
+*.pyc
+*.log
+.spyproject/
+gdx/
+jedi_models/
