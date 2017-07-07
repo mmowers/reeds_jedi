@@ -48,6 +48,16 @@ excel = win32.Dispatch('Excel.Application')
 wb = excel.Workbooks.Open(this_dir + r'/jedi_models/01D_JEDI_Land-based_Wind_Model_rel._W12.23.16.xlsm')
 ws_in = wb.Worksheets('ProjectData')
 ws_out = wb.Worksheets('SummaryResults')
+
+#set default values
+ws_in.Range('B13').Value = 'United States' #region of interest
+ws_in.Range('B15').Value = 2015 #year of construction
+ws_in.Range('B16').Value = 100 #project size (MW)
+ws_in.Range('B17').Value = 1 #number of projects
+ws_in.Range('B18').Value = 3000 #Turbine size (kW)
+ws_in.Range('B22').Value = 2015 #dollar year
+ws_in.Range('B24').Value = 'N' #Y to use default local shares etc, and N to not use them.
+           
 #now, fill in new capital and o&m cost, and get associated economic impact.
 for i, r in df.iterrows():
     if (i+1)%100 == 0:
