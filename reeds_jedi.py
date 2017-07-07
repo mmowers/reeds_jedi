@@ -36,7 +36,7 @@ df = df.groupby(['cat', 'n', 'st', 'year'], as_index=False).sum()
 df['price'] = df['cost']/df['capacity']/1000
 
 
-#add columns for 
+#add columns for jedi outputs
 out_cols = ['jobs_direct', 'jobs_indirect', 'jobs_induced',
             'earnings_direct', 'earnings_indirect', 'earnings_induced',
             'output_direct', 'output_indirect', 'output_induced',
