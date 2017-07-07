@@ -50,7 +50,8 @@ ws_in = wb.Worksheets('ProjectData')
 ws_out = wb.Worksheets('SummaryResults')
 #now, fill in new capital and o&m cost, and get associated economic impact.
 for i, r in df.iterrows():
-    print(str(i) + '/'+str(len(df.index)))
+    if (i+1)%100 == 0:
+        print(str(i+1) + '/'+str(len(df.index)))
     if r['cat']=='Capital':
         ws_in.Range('B20').Value = r['price']
         out_row_start = 28
