@@ -58,7 +58,9 @@ for i, r in df.iterrows():
     elif r['cat']=='OM':
         ws_in.Range('B21').Value = r['price']
         out_row_start = 34
+    #we need to scale the outputs by the capacity, since we used a 100 MW project to create the outputs
+    mult = r['capacity']/float(ws_in.Range('B16').Value)
     for col in range(4):
         for row in range(3):
-            df.iloc[i,7 + col*3 + row] = ws_out.Cells(out_row_start + row, 2 + col).Value
+            df.iloc[i,7 + col*3 + row] = mult * float(ws_out.Cells(out_row_start + row, 2 + col).Value)
 wb.Close(False)
