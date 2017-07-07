@@ -1,4 +1,4 @@
-Type,Subtype,Description,Row,Low,High
+type,subtype,description,row,Low,High
 Construction,Equipment,Turbines (excluding blades and towers),33,20%,50%
 Construction,Equipment,Blades,34,60%,90%
 Construction,Equipment,Towers,35,50%,90%
