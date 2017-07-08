@@ -5,10 +5,15 @@ import pandas as pd
 import win32com.client as win32
 import os
 
+#switches
+test_switch = True
+state_switch = False
+wbvis_switch = False
+
 this_dir = os.path.dirname(os.path.realpath(__file__))
 
 #get reeds output data
-dfs = gdxpds.to_dataframes(r"C:\Users\mmowers\Projects\JEDI\reeds_jedi\gdx\JediWind.gdx")
+dfs = gdxpds.to_dataframes(r'C:\Users\mmowers\Projects\JEDI\reeds_jedi\gdx\JediWind.gdx')
 df_cost = dfs['JediWindCost']
 df_cap = dfs['JediWindBuilds']
 df_cost.rename(columns={'jedi_cost_cat': 'cat', 'allyears': 'year', 'Value':'cost'}, inplace=True)
@@ -30,12 +35,15 @@ df = df[df['st'] != 'MEX']
 df['year'] = df['year'].astype(int)
 df = df[df['year'] > 2016]
 
+#Test filter
+if test_switch:
+    df = df[df['st'] == 'IOWA']
+
 #group and sum
 df = df.groupby(['cat', 'n', 'st', 'year'], as_index=False).sum()
 
 #add column for price ($/kW)
 df['price'] = df['cost']/df['capacity']/1000
-
 
 #add columns for jedi outputs
 out_cols = ['jobs_direct', 'jobs_indirect', 'jobs_induced',
@@ -46,8 +54,9 @@ df = df.reindex(columns=df.columns.values.tolist() + out_cols)
 
 #first, open jedi workbook
 excel = win32.Dispatch('Excel.Application')
-#excel.Visible = True
-wb = excel.Workbooks.Open(this_dir + r'/jedi_models/01D_JEDI_Land-based_Wind_Model_rel._W12.23.16.xlsm')
+if wbvis_switch:
+    excel.Visible = True
+wb = excel.Workbooks.Open(this_dir + r'\jedi_models\01D_JEDI_Land-based_Wind_Model_rel._W12.23.16.xlsm')
 ws_in = wb.Worksheets('ProjectData')
 ws_out = wb.Worksheets('SummaryResults')
 
@@ -73,8 +82,9 @@ for scen_name in content_scenarios:
         ws_in.Range('E' + str(r['row'])).Value = r[scen_name]
     #now, loop through df rows, fill in new capital and o&m cost, and get associated economic impacts
     for i, r in df.iterrows():
-        #set region as state, or comment out to use United States as region
-        #ws_in.Range('B13').Value = r['st']
+        #set region as state if state_switch is True. Otherwise, United States will be used
+        if state_switch:
+            ws_in.Range('B13').Value = r['st']
         if (i+1)%100 == 0:
             print(str(i+1) + '/'+str(len(df.index)))
         if r['cat']=='Capital':
