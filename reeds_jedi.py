@@ -21,7 +21,7 @@ df = pd.merge(left=df_cap, right=df_cost, how='outer', on=['cat','c','windtype',
 df['cost'] = df['cost']/0.796636801524834
 
 #merge with states
-df_hierarchy = pd.read_csv('hierarchy.csv')
+df_hierarchy = pd.read_csv(this_dir + r'\inputs\hierarchy.csv')
 df = pd.merge(left=df, right=df_hierarchy, how='left', on=['n'], sort=False)
 
 #limit to only onshore, and only to US, and only 2017 and after
@@ -61,7 +61,7 @@ ws_in.Range('B22').Value = 2015 #dollar year
 ws_in.Range('B24').Value = 'N' #Y to use default local shares etc, and N to not use them.
 
 #read in array of local shares. Scenarios start in the 5th column (index=4)
-df_local_share = pd.read_csv('local_share.csv')
+df_local_share = pd.read_csv(this_dir + r'\inputs\wind_local_share.csv')
 content_scenarios = df_local_share.columns.values.tolist()[4:]
 df = df.reindex(columns=['content_scenario'] + df.columns.values.tolist())
 df_full = pd.DataFrame()
@@ -94,5 +94,5 @@ for scen_name in content_scenarios:
         df[c] = np.nan
 wb.Close(False)
 df = df_full
-df.to_csv('out.csv', index=False)
+df.to_csv(this_dir + r'\outputs\out.csv', index=False)
 
