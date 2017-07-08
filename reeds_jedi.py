@@ -73,6 +73,8 @@ for scen_name in content_scenarios:
         ws_in.Range('E' + str(r['row'])).Value = r[scen_name]
     #now, loop through df rows, fill in new capital and o&m cost, and get associated economic impacts
     for i, r in df.iterrows():
+        #set region as state, or comment out to use United States as region
+        #ws_in.Range('B13').Value = r['st']
         if (i+1)%100 == 0:
             print(str(i+1) + '/'+str(len(df.index)))
         if r['cat']=='Capital':
