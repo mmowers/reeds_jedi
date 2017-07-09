@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import win32com.client as win32
 import os
+import sys
 
 #switches
 test_switch = False
@@ -30,7 +31,13 @@ df['cost'] = df['cost']/0.796636801524834
 df_hierarchy = pd.read_csv(this_dir + r'\inputs\hierarchy.csv')
 df = pd.merge(left=df, right=df_hierarchy, how='left', on=['n'], sort=False)
 
-#limit to only onshore, and only to US, and only 2017 and after
+#throw error if region is unmapped
+df_unmapped = df[pd.isnull(df['st'])]
+if not df_unmapped.empty:
+    print(df_unmapped)
+    sys.exit("unmapped regions shown above!")
+
+#limit to only onshore, and only 2017 and after, and only US
 df = df[df['windtype'] == 'wind-ons']
 df = df[df['st'] != 'MEXICO']
 df['year'] = df['year'].astype(int)
@@ -83,7 +90,7 @@ for scen_name in content_scenarios:
         ws_in.Range('E' + str(r['row'])).Value = r[scen_name]
     #now, loop through df rows, fill in new capital and o&m cost, and get associated economic impacts
     for i, r in df.iterrows():
-        #set region as state if state_switch is True. Otherwise, United States will be used
+        #set region as state if state_switch is True (WARNING: MAKE SURE ALL DATA IS MAPPED TO VALID STATES). Otherwise, United States will be used
         if state_switch:
             ws_in.Range('B13').Value = r['st']
         if (i+1)%100 == 0:
