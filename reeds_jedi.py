@@ -32,7 +32,7 @@ df = pd.merge(left=df, right=df_hierarchy, how='left', on=['n'], sort=False)
 
 #limit to only onshore, and only to US, and only 2017 and after
 df = df[df['windtype'] == 'wind-ons']
-df = df[df['st'] != 'MEX']
+df = df[df['st'] != 'MEXICO']
 df['year'] = df['year'].astype(int)
 df = df[df['year'] > 2016]
 
