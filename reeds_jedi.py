@@ -68,14 +68,10 @@ wb = excel.Workbooks.Open(this_dir + r'\jedi_models\01D_JEDI_Land-based_Wind_Mod
 ws_in = wb.Worksheets('ProjectData')
 ws_out = wb.Worksheets('SummaryResults')
 
-#set default values
-ws_in.Range('B13').Value = 'United States' #region of interest
-ws_in.Range('B15').Value = 2015 #year of construction
-ws_in.Range('B16').Value = 100 #project size (MW)
-ws_in.Range('B17').Value = 1 #number of projects
-ws_in.Range('B18').Value = 3000 #Turbine size (kW)
-ws_in.Range('B22').Value = 2015 #dollar year
-ws_in.Range('B24').Value = 'N' #Y to use default local shares etc, and N to not use them.
+#set constants
+df_constants = pd.read_csv(this_dir + r'\inputs\wind_constants.csv')
+for i, r in df_constants.iterrows():
+    ws_in.Range(r['cell']).Value = r['value']
 
 #read in array of local shares. Scenarios start in the 5th column (index=4)
 df_local_share = pd.read_csv(this_dir + r'\inputs\wind_local_share.csv')
