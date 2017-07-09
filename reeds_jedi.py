@@ -6,14 +6,15 @@ import win32com.client as win32
 import os
 
 #switches
-test_switch = True
+test_switch = False
 state_switch = False
 wbvis_switch = False
 
+#get reeds output data
+dfs = gdxpds.to_dataframes(r'C:\Users\mmowers\Projects\JEDI\reeds gdx\JediWind.gdx')
+
 this_dir = os.path.dirname(os.path.realpath(__file__))
 
-#get reeds output data
-dfs = gdxpds.to_dataframes(r'C:\Users\mmowers\Projects\JEDI\reeds_jedi\gdx\JediWind.gdx')
 df_cost = dfs['JediWindCost']
 df_cap = dfs['JediWindBuilds']
 df_cost.rename(columns={'jedi_cost_cat': 'cat', 'allyears': 'year', 'Value':'cost'}, inplace=True)
