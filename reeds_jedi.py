@@ -74,16 +74,16 @@ for i, r in df_constants.iterrows():
     ws_in.Range(r['cell']).Value = r['value']
 
 #read in array of local shares. Scenarios start in the 5th column (index=4)
-df_local_share = pd.read_csv(this_dir + r'\inputs\wind_local_share.csv')
-content_scenarios = df_local_share.columns.values.tolist()[4:]
+df_scenarios = pd.read_csv(this_dir + r'\inputs\wind_scenarios.csv')
+content_scenarios = df_scenarios.columns.values.tolist()[4:]
 df = df.reindex(columns=['content_scenario'] + df.columns.values.tolist())
 df_full = pd.DataFrame()
 for scen_name in content_scenarios:
     #set content_scenario column
     df['content_scenario'] = scen_name
     #fill in the local share cells
-    for i, r in df_local_share.iterrows():
-        ws_in.Range('E' + str(r['row'])).Value = r[scen_name]
+    for i, r in df_scenarios.iterrows():
+        ws_in.Range(r['cell']).Value = r[scen_name]
     #now, loop through df rows, fill in new capital and o&m cost, and get associated economic impacts
     for i, r in df.iterrows():
         #set region as state if state_switch is True (WARNING: MAKE SURE ALL DATA IS MAPPED TO VALID STATES). Otherwise, United States will be used

@@ -1,0 +1,36 @@
+type,subtype,description,cell,Low,High
+Construction,Equipment,Turbines (excluding blades and towers),E33,20%,50%
+Construction,Equipment,Blades,E34,60%,90%
+Construction,Equipment,Towers,E35,50%,90%
+Construction,Equipment,Transportation,E36,90%,90%
+Construction,Materials,"Construction (concrete, rebar, equip, roads and site prep)",E40,80%,95%
+Construction,Materials,Transformer,E41,80%,95%
+Construction,Materials,"Electrical (drop cable, wire, )",E42,80%,95%
+Construction,Materials,HV line extension,E43,80%,95%
+Construction,Labor,Foundation,E46,100%,100%
+Construction,Labor,Erection,E47,100%,100%
+Construction,Labor,Electrical,E48,100%,100%
+Construction,Labor,Management/Supervision,E49,100%,100%
+Construction,Labor,Misc.,E50,100%,100%
+Construction,Other,HV Materials,E54,80%,95%
+Construction,Other,HV Labor,E55,100%,100%
+Construction,Other,Engineering,E56,80%,95%
+Construction,Other,Legal Services,E57,100%,100%
+Construction,Other,Land Easements,E58,100%,100%
+Construction,Other,Site Certificate/Permitting,E59,100%,100%
+Operation,Labor,Field Salaries,E71,100%,100%
+Operation,Labor,Administrative,E72,100%,100%
+Operation,Labor,Management,E73,100%,100%
+Operation,Materials_Services,Vehicles,E76,100%,100%
+Operation,Materials_Services,Site Maint/Misc. Services,E77,80%,95%
+Operation,Materials_Services,"Fees, Permits, Licenses",E78,100%,100%
+Operation,Materials_Services,Utilities,E79,100%,100%
+Operation,Materials_Services,Insurance,E80,65%,93%
+Operation,Materials_Services,Fuel (motor vehicle gasoline),E81,100%,100%
+Operation,Materials_Services,Consumables/Tools and Misc. Supplies,E82,100%,100%
+Operation,Materials_Services,Replacement Parts/Equipment/ Spare Parts Inventory,E83,30%,60%
+Other,Debt,Percentage financed,E92,65%,93%
+Other,Equity,Individual Investors (percent of total equity),E97,0%,0%
+Other,Equity,Corporate Investors (percent of total equity),E98,65%,93%
+Other,Tax,Local Taxes,E107,100%,100%
+Other,Lease,"Lease Payment recipient (F = farmer/household, O = Other)",E113,100%,100%
