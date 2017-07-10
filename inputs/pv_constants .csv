@@ -1,0 +1,10 @@
+name,cell,value
+region,B12,United States
+year of construction,B14,2015
+system application,B15,Utility
+material,B16,Crystalline Silicon
+system tracking,B17,Single Axis
+average system size (kW),B18,1000
+number of systems,B19,100
+dollar year,B24,2015
+use defaults?,B26,N

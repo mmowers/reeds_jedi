@@ -1,0 +1,15 @@
+type,subtype,description,cell,Low,High
+Construction,Equipment,Mounting,E33,100%,100%
+Construction,Equipment,Modules,E34,100%,100%
+Construction,Equipment,Electrical,E35,100%,100%
+Construction,Equipment,Inverter,E36,100%,100%
+Construction,Labor,Installation,E39,100%,100%
+Construction,Other,Permitting,E43,100%,100%
+Construction,Other,Other,E44,100%,100%
+Construction,Other,Business Overhead,E45,100%,100%
+Operation,Labor,Technicians,E54,100%,100%
+Operation,Materials_Services,Materials & Equipment,E58,100%,100%
+Operation,Materials_Services,Services,E59,100%,100%
+Other,Debt,Percentage Financed,D67,0%,0%
+Other,Tax,Local Property Taxes,D76,100%,100%
+Other,Tax,Local Sales Tax Rate,D77,100%,100%
