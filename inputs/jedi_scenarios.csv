@@ -1,0 +1,50 @@
+tech,type,subtype,description,cell,Low,High
+wind-ons,Construction,Equipment,Turbines (excluding blades and towers),E33,20%,50%
+wind-ons,Construction,Equipment,Blades,E34,60%,90%
+wind-ons,Construction,Equipment,Towers,E35,50%,90%
+wind-ons,Construction,Equipment,Transportation,E36,90%,90%
+wind-ons,Construction,Materials,"Construction (concrete, rebar, equip, roads and site prep)",E40,80%,95%
+wind-ons,Construction,Materials,Transformer,E41,80%,95%
+wind-ons,Construction,Materials,"Electrical (drop cable, wire, )",E42,80%,95%
+wind-ons,Construction,Materials,HV line extension,E43,80%,95%
+wind-ons,Construction,Labor,Foundation,E46,100%,100%
+wind-ons,Construction,Labor,Erection,E47,100%,100%
+wind-ons,Construction,Labor,Electrical,E48,100%,100%
+wind-ons,Construction,Labor,Management/Supervision,E49,100%,100%
+wind-ons,Construction,Labor,Misc.,E50,100%,100%
+wind-ons,Construction,Other,HV Materials,E54,80%,95%
+wind-ons,Construction,Other,HV Labor,E55,100%,100%
+wind-ons,Construction,Other,Engineering,E56,80%,95%
+wind-ons,Construction,Other,Legal Services,E57,100%,100%
+wind-ons,Construction,Other,Land Easements,E58,100%,100%
+wind-ons,Construction,Other,Site Certificate/Permitting,E59,100%,100%
+wind-ons,Operation,Labor,Field Salaries,E71,100%,100%
+wind-ons,Operation,Labor,Administrative,E72,100%,100%
+wind-ons,Operation,Labor,Management,E73,100%,100%
+wind-ons,Operation,Materials_Services,Vehicles,E76,100%,100%
+wind-ons,Operation,Materials_Services,Site Maint/Misc. Services,E77,80%,95%
+wind-ons,Operation,Materials_Services,"Fees, Permits, Licenses",E78,100%,100%
+wind-ons,Operation,Materials_Services,Utilities,E79,100%,100%
+wind-ons,Operation,Materials_Services,Insurance,E80,65%,93%
+wind-ons,Operation,Materials_Services,Fuel (motor vehicle gasoline),E81,100%,100%
+wind-ons,Operation,Materials_Services,Consumables/Tools and Misc. Supplies,E82,100%,100%
+wind-ons,Operation,Materials_Services,Replacement Parts/Equipment/ Spare Parts Inventory,E83,30%,60%
+wind-ons,Other,Debt,Percentage financed,E92,65%,93%
+wind-ons,Other,Equity,Individual Investors (percent of total equity),E97,0%,0%
+wind-ons,Other,Equity,Corporate Investors (percent of total equity),E98,65%,93%
+wind-ons,Other,Tax,Local Taxes,E107,100%,100%
+wind-ons,Other,Lease,"Lease Payment recipient (F = farmer/household, O = Other)",E113,100%,100%
+PV,Construction,Equipment,Mounting,E33,100%,100%
+PV,Construction,Equipment,Modules,E34,100%,100%
+PV,Construction,Equipment,Electrical,E35,100%,100%
+PV,Construction,Equipment,Inverter,E36,100%,100%
+PV,Construction,Labor,Installation,E39,100%,100%
+PV,Construction,Other,Permitting,E43,100%,100%
+PV,Construction,Other,Other,E44,100%,100%
+PV,Construction,Other,Business Overhead,E45,100%,100%
+PV,Operation,Labor,Technicians,E54,100%,100%
+PV,Operation,Materials_Services,Materials & Equipment,E58,100%,100%
+PV,Operation,Materials_Services,Services,E59,100%,100%
+PV,Other,Debt,Percentage Financed,D67,0%,0%
+PV,Other,Tax,Local Property Taxes,D76,100%,100%
+PV,Other,Tax,Local Sales Tax Rate,D77,100%,100%

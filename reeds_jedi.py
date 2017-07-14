@@ -1,6 +1,5 @@
 from __future__ import division
 import gdxpds
-import numpy as np
 import pandas as pd
 import win32com.client as win32
 import os
@@ -12,101 +11,120 @@ state_switch = False
 wbvis_switch = False
 
 #get reeds output data
-dfs = gdxpds.to_dataframes(r'C:\Users\mmowers\Projects\JEDI\reeds gdx\JediWind.gdx')
+dfs = gdxpds.to_dataframes(r"\\nrelqnap01d\ReEDS\FY17-JEDI-MRM\runs\JEDI\gdxfiles\JEDI.gdx")
 
 this_dir = os.path.dirname(os.path.realpath(__file__))
 
-df_cost = dfs['JediWindCost']
-df_cap = dfs['JediWindBuilds']
-df_cost.rename(columns={'jedi_cost_cat': 'cat', 'allyears': 'year', 'Value':'cost'}, inplace=True)
-df_cap.rename(columns={'jedi_build_cat':'cat', 'allyears': 'year', 'Value':'capacity'}, inplace=True)
-df_cap['cat'].replace('New', 'Capital', inplace=True)
-df_cap['cat'].replace('Cumulative', 'OM', inplace=True)
-df = pd.merge(left=df_cap, right=df_cost, how='outer', on=['cat','c','windtype', 'n', 'year'], sort=False)
+df_cost = dfs['JediCost']
+df_cap = dfs['JediCapacity']
+df_cost.rename(columns={'jedi_cat': 'cat', 'bigQ': 'tech', 'allyears': 'year', 'Value':'cost'}, inplace=True)
+df_cap.rename(columns={'jedi_cat': 'cat', 'bigQ': 'tech', 'allyears': 'year', 'Value':'capacity'}, inplace=True)
+df_full = pd.merge(left=df_cap, right=df_cost, how='outer', on=['cat','tech', 'n', 'year'], sort=False)
 
 #convert costs to 2015$
-df['cost'] = df['cost']/0.796636801524834
+df_full['cost'] = df_full['cost']/0.796636801524834
 
 #merge with states
 df_hierarchy = pd.read_csv(this_dir + r'\inputs\hierarchy.csv')
-df = pd.merge(left=df, right=df_hierarchy, how='left', on=['n'], sort=False)
+df_full = pd.merge(left=df_full, right=df_hierarchy, how='left', on=['n'], sort=False)
 
 #throw error if region is unmapped
-df_unmapped = df[pd.isnull(df['st'])]
+df_unmapped = df_full[pd.isnull(df_full['st'])]
 if not df_unmapped.empty:
     print(df_unmapped)
     sys.exit("unmapped regions shown above!")
 
-#limit to only onshore, and only 2017 and after, and only US
-df = df[df['windtype'] == 'wind-ons']
-df = df[df['st'] != 'MEXICO']
-df['year'] = df['year'].astype(int)
-df = df[df['year'] > 2016]
+#limit to only 2017 and after, and only US
+df_full = df_full[df_full['st'] != 'MEXICO']
+df_full['year'] = df_full['year'].astype(int)
+df_full = df_full[df_full['year'] > 2016]
 
 #Test filter
 if test_switch:
-    df = df[df['st'] == 'IOWA']
+    df_full = df_full[df_full['st'] == 'IOWA']
 
-#group and sum
-df = df.groupby(['cat', 'n', 'st', 'year'], as_index=False).sum()
+#group and sum. Aggregate n to state in the process
+df_full = df_full.groupby(['cat', 'tech', 'st', 'year'], as_index=False).sum()
 
 #add column for price ($/kW)
-df['price'] = df['cost']/df['capacity']/1000
+df_full['price'] = df_full['cost']/df_full['capacity']/1000
 
 #add columns for jedi outputs
 out_cols = ['jobs_direct', 'jobs_indirect', 'jobs_induced',
             'earnings_direct', 'earnings_indirect', 'earnings_induced',
             'output_direct', 'output_indirect', 'output_induced',
             'value_add_direct', 'value_add_indirect', 'value_add_induced']
-df = df.reindex(columns=df.columns.values.tolist() + out_cols)
+df_full = df_full.reindex(columns=df_full.columns.values.tolist() + out_cols)
 
-#first, open jedi workbook
-excel = win32.Dispatch('Excel.Application')
-if wbvis_switch:
-    excel.Visible = True
-wb = excel.Workbooks.Open(this_dir + r'\jedi_models\01D_JEDI_Land-based_Wind_Model_rel._W12.23.16.xlsm')
-ws_in = wb.Worksheets('ProjectData')
-ws_out = wb.Worksheets('SummaryResults')
+#read in constants for each tech
+df_constants = pd.read_csv(this_dir + r'\inputs\constants.csv')
 
-#set constants
-df_constants = pd.read_csv(this_dir + r'\inputs\wind_constants.csv')
-for i, r in df_constants.iterrows():
-    ws_in.Range(r['cell']).Value = r['value']
+#read in jedi_scenarios and concatenate dataframe for each one
+df_jedi_scenarios = pd.read_csv(this_dir + r'\inputs\jedi_scenarios.csv')
+#read in array of local shares. Scenarios start in the 6th column (index=5)
+jedi_scenarios = df_jedi_scenarios.columns.values.tolist()[5:]
+df_full = df_full.reindex(columns=['jedi_scenario'] + df_full.columns.values.tolist())
+df_temp = pd.DataFrame() #temporary
+for scen_name in jedi_scenarios:
+    df_full['jedi_scenario'] = scen_name
+    df_temp = pd.concat([df_temp, df_full], ignore_index=True)
+df_full = df_temp
 
-#read in array of local shares. Scenarios start in the 5th column (index=4)
-df_scenarios = pd.read_csv(this_dir + r'\inputs\wind_scenarios.csv')
-content_scenarios = df_scenarios.columns.values.tolist()[4:]
-df = df.reindex(columns=['content_scenario'] + df.columns.values.tolist())
-df_full = pd.DataFrame()
-for scen_name in content_scenarios:
-    #set content_scenario column
-    df['content_scenario'] = scen_name
-    #fill in the local share cells
-    for i, r in df_scenarios.iterrows():
-        ws_in.Range(r['cell']).Value = r[scen_name]
-    #now, loop through df rows, fill in new capital and o&m cost, and get associated economic impacts
-    for i, r in df.iterrows():
-        #set region as state if state_switch is True (WARNING: MAKE SURE ALL DATA IS MAPPED TO VALID STATES). Otherwise, United States will be used
-        if state_switch:
-            ws_in.Range('B13').Value = r['st']
-        if (i+1)%100 == 0:
-            print(str(i+1) + '/'+str(len(df.index)))
-        if r['cat']=='Capital':
-            ws_in.Range('B20').Value = r['price']
-            out_row_start = 28
-        elif r['cat']=='OM':
-            ws_in.Range('B21').Value = r['price']
-            out_row_start = 34
-        #we need to scale the outputs by the capacity, since we used a 100 MW project to create the outputs
-        mult = r['capacity']/float(ws_in.Range('B16').Value)
-        for col in range(4):
-            for row in range(3):
-                df.iloc[i,8 + col*3 + row] = mult * float(ws_out.Cells(out_row_start + row, 2 + col).Value)
-    df_full = pd.concat([df_full, df], ignore_index=True)
-    #clear jedi values from df
-    for c in out_cols:
-        df[c] = np.nan
-wb.Close(False)
-df = df_full
-df.to_csv(this_dir + r'\outputs\out.csv', index=False)
+#Read in list of jedi models
+df_models = pd.read_csv(this_dir + r'\inputs\models.csv')
+jedi_models = df_models.to_dict('list')
+#jedi_models = dict(zip(list(df_models['tech']), list(df_models['model'])))
+
+#Read in workbook inputs and outputs
+df_variables = pd.read_csv(this_dir + r'\inputs\variables.csv')
+df_outputs = pd.read_csv(this_dir + r'\inputs\outputs.csv')
+df_size = pd.read_csv(this_dir + r'\inputs\project_size.csv')
+
+#loop through techs
+for x, tech in enumerate(jedi_models['tech']):
+    print('tech = ' + tech)
+    #filter to just this tech
+    df_tech = df_full[df_full['tech'] == tech]
+    df_const = df_constants[df_constants['tech'] == tech]
+    df_jedi_scen = df_jedi_scenarios[df_jedi_scenarios['tech'] == tech]
+    df_var = df_variables[df_variables['tech']==tech]
+    df_out = df_outputs[df_outputs['tech']==tech]
+
+    project_size = df_size[df_size['tech'] == tech]['MW'].iloc[0] #MW
+    
+    #first, open jedi workbook
+    excel = win32.Dispatch('Excel.Application')
+    if wbvis_switch:
+        excel.Visible = True
+    wb = excel.Workbooks.Open(this_dir + '\\jedi_models\\' + jedi_models['model'][x])
+    ws_in = wb.Worksheets('ProjectData')
+    ws_out = wb.Worksheets('SummaryResults')
+
+    #set constants
+    for i, r in df_const.iterrows():
+        ws_in.Range(r['cell']).Value = r['value']
+    for scen_name in jedi_scenarios:
+        print('scenario = ' + scen_name)
+        #filter to correct jedi scenario
+        df_scen = df_tech[df_tech['jedi_scenario'] == scen_name]
+        #fill in the local share cells
+        for i, r in df_jedi_scen.iterrows():
+            ws_in.Range(r['cell']).Value = r[scen_name]
+        #now, loop through df rows, fill in new capital and o&m cost, and get associated economic impacts
+        c = 1
+        for i, r in df_scen.iterrows():
+            #set region as state if state_switch is True (WARNING: MAKE SURE ALL DATA IS MAPPED TO VALID STATES). Otherwise, United States will be used
+            if state_switch:
+                ws_in.Range('B13').Value = r['st']
+            if c%100 == 0:
+                print(str(c) + '/'+str(len(df_scen)))
+            cell = df_var[df_var['cat'] == r['cat']]['cell'].iloc[0]
+            ws_in.Range(cell).Value = r['price']
+            #we need to scale the outputs by the capacity, since we used a 100 MW project to create the outputs
+            mult = r['capacity']/project_size
+            for j,ro in df_out[df_out['cat'] == r['cat']].iterrows():
+                df_full.loc[i, ro['type']] = mult*float(ws_out.Range(ro['cell']).Value)
+            c = c + 1
+    wb.Close(False)
+df_full.to_csv(this_dir + r'\outputs\out.csv', index=False)
 
