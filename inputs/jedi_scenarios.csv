@@ -29,10 +29,12 @@ wind-ons,Operation,Materials_Services,Insurance,E80,65%,93%
 wind-ons,Operation,Materials_Services,Fuel (motor vehicle gasoline),E81,100%,100%
 wind-ons,Operation,Materials_Services,Consumables/Tools and Misc. Supplies,E82,100%,100%
 wind-ons,Operation,Materials_Services,Replacement Parts/Equipment/ Spare Parts Inventory,E83,30%,60%
+wind-ons,Operation,Other,Other Taxes/Payments,E86,100%,100%
 wind-ons,Other,Debt,Percentage financed,E92,65%,93%
 wind-ons,Other,Equity,Individual Investors (percent of total equity),E97,0%,0%
 wind-ons,Other,Equity,Corporate Investors (percent of total equity),E98,65%,93%
 wind-ons,Other,Tax,Local Taxes,E107,100%,100%
+wind-ons,Other,Tax,Local Sales Tax Rate,E108,100%,100%
 wind-ons,Other,Lease,"Lease Payment recipient (F = farmer/household, O = Other)",E113,100%,100%
 PV,Construction,Equipment,Mounting,E33,100%,100%
 PV,Construction,Equipment,Modules,E34,100%,100%
