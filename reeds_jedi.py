@@ -8,12 +8,21 @@ import sys
 #switches
 test_switch = False
 state_switch = False
-wbvis_switch = True
+wbvis_switch = False
+
+this_dir = os.path.dirname(os.path.realpath(__file__))
 
 #get reeds output data
 dfs = gdxpds.to_dataframes(r"\\nrelqnap01d\ReEDS\FY17-JEDI-MRM\runs\JEDI 2017-07-20\gdxfiles\JEDI.gdx")
 
-this_dir = os.path.dirname(os.path.realpath(__file__))
+#Read in workbook input csvs
+df_techs = pd.read_csv(this_dir + r'\inputs\techs.csv')
+df_hierarchy = pd.read_csv(this_dir + r'\inputs\hierarchy.csv')
+df_constants = pd.read_csv(this_dir + r'\inputs\constants.csv')
+df_jedi_scenarios = pd.read_csv(this_dir + r'\inputs\jedi_scenarios.csv')
+df_variables = pd.read_csv(this_dir + r'\inputs\variables.csv')
+df_outputs = pd.read_csv(this_dir + r'\inputs\outputs.csv')
+df_output_cat = pd.read_csv(this_dir + r'\inputs\output_categories.csv')
 
 df_full = dfs['Jedi']
 df_full.rename(columns={'bigQ': 'tech', 'allyears': 'year', 'jedi_cat': 'cat'}, inplace=True)
@@ -24,7 +33,6 @@ row_criteria = df_full['cat'].isin(cost_cols)
 df_full.loc[row_criteria, 'Value'] = df_full.loc[row_criteria, 'Value'] / 0.796636801524834
 
 #merge with states
-df_hierarchy = pd.read_csv(this_dir + r'\inputs\hierarchy.csv')
 df_full = pd.merge(left=df_full, right=df_hierarchy, how='left', on=['n'], sort=False)
 
 #throw error if region is unmapped
@@ -45,11 +53,7 @@ if test_switch:
 #group and sum. Aggregate n to state in the process
 df_full = df_full.groupby(['tech', 'st', 'year', 'cat'], as_index=False).sum()
 
-#read in constants for each tech
-df_constants = pd.read_csv(this_dir + r'\inputs\constants.csv')
-
-#read in jedi_scenarios and concatenate dataframe for each one
-df_jedi_scenarios = pd.read_csv(this_dir + r'\inputs\jedi_scenarios.csv')
+#concatenate dataframe for each jedi scenario
 #read in array of local shares. Scenarios start in the 6th column (index=5)
 jedi_scenarios = df_jedi_scenarios.columns.values.tolist()[5:]
 df_full = df_full.reindex(columns=['jedi_scenario'] + df_full.columns.values.tolist())
@@ -59,13 +63,19 @@ for scen_name in jedi_scenarios:
     df_temp = pd.concat([df_temp, df_full], ignore_index=True)
 df_full = df_temp
 
-#Read in workbook inputs and outputs
-df_variables = pd.read_csv(this_dir + r'\inputs\variables.csv')
-df_outputs = pd.read_csv(this_dir + r'\inputs\outputs.csv')
-df_techs = pd.read_csv(this_dir + r'\inputs\techs.csv')
+#Make another column to distinguish new capacity from existing capacity that is retiring.
+df_full['type'] = 'new'
+df_full.loc[df_full['cat']=='exist_retire', 'type'] = 'exist_retire'
+df_full.loc[df_full['type']=='exist_retire', 'cat'] = 'capacity'
 
-#initialize outputs
-df_econ = pd.DataFrame(columns=['jedi_scenario', 'tech', 'st' ,'year' , 'type', 'econ_year', 'econ_cat', 'econ_type', 'econ_val'])
+#Now pivot to turn each row into its own input
+df_full = df_full.pivot_table(index=['jedi_scenario','tech','st', 'year','type'], columns='cat', values='Value').reset_index()
+
+#add columns for outputs
+df_full = df_full.reindex(columns=df_full.columns.values.tolist() + df_output_cat['output'].values.tolist())
+
+#join output categories to outputs
+df_outputs = pd.merge(left=df_outputs, right=df_output_cat, how='left', on=['output'], sort=False)
 
 #loop through techs
 for x, tech in enumerate(df_techs['tech'].values.tolist()):
@@ -76,9 +86,9 @@ for x, tech in enumerate(df_techs['tech'].values.tolist()):
     df_jedi_scen = df_jedi_scenarios[df_jedi_scenarios['tech'] == tech]
     df_var = df_variables[df_variables['tech']==tech]
     df_out = df_outputs[df_outputs['tech']==tech]
+    df_out_oper = df_out[df_out['type']=='operation']
 
     project_size = df_techs[df_techs['tech'] == tech]['project_size'].iloc[0] #MW
-    
     
     #first, open jedi workbook
     excel = win32.Dispatch('Excel.Application')
@@ -95,62 +105,110 @@ for x, tech in enumerate(df_techs['tech'].values.tolist()):
         print('scenario = ' + scen_name)
         #filter to correct jedi scenario
         df_scen = df_tech[df_tech['jedi_scenario'] == scen_name]
-
         #fill in the local share cells
         for i, r in df_jedi_scen.iterrows():
             ws_in.Range(r['cell']).Value = r[scen_name]
 
         #Do existing plants first
-        df_exist = df_scen[df_scen['cat']=='exist_retire']
+        df_exist = df_scen[df_scen['type']=='exist_retire']
         #set the inputs for existing plants
         for i, r in df_var.iterrows():
              ws_in.Range(r['cell']).Value = r['exist_val']
-        #grab the economic outputs
-        df_econ_outputs = pd.DataFrame(columns=['cat', 'type','val'])
-        for i, r in df_out.iterrows():
-            df_econ_outputs = df_econ_outputs.append({'cat': r['cat'], 'type': r['type'], 'val': float(ws_out.Range(r['cell']).Value)}, ignore_index=True)
-        #Apply outputs to each existing plant
+        #Grab the operation outputs for existing plants
+        exist_out = {}
+        for i,r in df_out_oper.iterrows():
+            exist_out[r['output']] = float(ws_out.Range(r['cell']).Value)
+        #Now fill the dataframe with existing outputs, scaled by project size
         for i, r in df_exist.iterrows():
-            mult = r['Value']/project_size
-            years = [i + 2010 for i in list(range(r['year'] - 2010 - 1))]
-            for y in years:
-                for j, e in df_econ_outputs[df_econ_outputs['cat']=='Operation'].iterrows():
-                    df_econ = df_econ.append({'jedi_scenario': scen_name, 'tech': tech, 'st': r['st'], 'year': r['year'], 'type': 'exist', 'econ_year': y, 'econ_cat': e['cat'], 'econ_type': e['type'], 'econ_val': mult*e['val']}, ignore_index=True)
+            mult = r['capacity']/project_size
+            for out in exist_out:
+                df_full.loc[i, out] = mult*exist_out[out]
 
         #Now do new capacity
-        df_new = df_scen[df_scen['cat']!='exist_retire']
-        #pivot df_new so that we can iterate on rows, and add columns for cap_cost and om_cost
-        df_new = df_new.pivot_table(index=['tech', 'st', 'year'], columns='cat', values='Value').reset_index()
-        df_new['cap_cost'] = df_new['cost_capital']/df_new['capacity']/1000
-        df_new['om_cost'] = df_new['cost_om']/df_new['capacity']/1000
+        df_new = df_scen[df_scen['type']=='new']
         #now, loop through df rows, fill in new capital and o&m cost, and get associated economic impacts
         c = 1
         for i, r in df_new.iterrows():
+            costs = {}
+            costs['cap_cost'] = r['cost_capital']/r['capacity']/1000
+            costs['om_cost'] = r['cost_om']/r['capacity']/1000
             #set region as state if state_switch is True (WARNING: MAKE SURE ALL DATA IS MAPPED TO VALID STATES). Otherwise, United States will be used
             if state_switch:
                 ws_in.Range('B13').Value = r['st'] #THIS NEEDS TO BE UPDATED TO USE CONSTANTS
-            if c%100 == 0:
+            if c%10 == 0:
                 print(str(c) + '/'+str(len(df_new)))
+            #Set variable inputs
             for j, ro in df_var.iterrows():
-                 ws_in.Range(ro['cell']).Value = r[ro['cat']]
-            #grab the economic outputs
-            df_econ_outputs = pd.DataFrame(columns=['cat', 'type','val'])
-            for j, ro in df_out.iterrows():
-                df_econ_outputs = df_econ_outputs.append({'cat': ro['cat'], 'type': ro['type'], 'val': float(ws_out.Range(ro['cell']).Value)}, ignore_index=True)
-            #we need to scale the outputs by the capacity, since we used a 100 MW project to create the outputs
+                 ws_in.Range(ro['cell']).Value = costs[ro['cat']]
+            #grab the economic outputs and scale by project size
             mult = r['capacity']/project_size
-            #Construction results: half of outputs are in solve year t, and half are in t-1
-            years = [r['year'] -1, r['year']]
-            for y in years:
-                for j, e in df_econ_outputs[df_econ_outputs['cat']=='Construction'].iterrows():
-                    df_econ = df_econ.append({'jedi_scenario': scen_name, 'tech': tech, 'st': r['st'], 'year': r['year'], 'type': 'new', 'econ_year': y, 'econ_cat': e['cat'], 'econ_type': e['type'], 'econ_val': mult*e['val']/2}, ignore_index=True)
-            #Operation results: annual construction outputs start at solve year t and go across lifetime of plant.
-            years = [i + r['year'] for i in list(range(df_techs['lifetime'][x]))]
-            for y in years:
-                for j, e in df_econ_outputs[df_econ_outputs['cat']=='Operation'].iterrows():
-                    df_econ = df_econ.append({'jedi_scenario': scen_name, 'tech': tech, 'st': r['st'], 'year': r['year'], 'type': 'new', 'econ_year': y, 'econ_cat': e['cat'], 'econ_type': e['type'], 'econ_val': mult*e['val']}, ignore_index=True)
+            for j,ro in df_out.iterrows():
+                df_full.loc[i, ro['output']] = mult*float(ws_out.Range(ro['cell']).Value)
             c = c + 1
     wb.Close(False)
-#drop na columns example: x = df_full.dropna(how='all', subset=['exist_retire'])
-df_econ.to_csv(this_dir + r'\outputs\out.csv', index=False)
 
+df_full.to_csv(this_dir + r'\outputs\df_full_pre_spread.csv', index=False)
+
+#Add dataframes to map solve years to construction years and operation years.
+solveyears = list(range(2010, 2052, 2))
+oper_years = {'type': [], 'tech': [], 'year': [], 'econ_year': []}
+constr_years = {'year':[], 'econ_year':[]}
+for y in solveyears:
+    constr_years['year'] += [y,y]
+    constr_years['econ_year'] += [y-1,y]
+    for i, r in df_techs.iterrows():
+        for j in range(2010, y-1):
+            oper_years['type'].append('exist_retire')
+            oper_years['tech'].append(r['tech'])
+            oper_years['year'].append(y)
+            oper_years['econ_year'].append(j)
+        for j in range(y, min(y + r['lifetime'], 2051)):
+            oper_years['type'].append('new')
+            oper_years['tech'].append(r['tech'])
+            oper_years['year'].append(y)
+            oper_years['econ_year'].append(j)
+df_oper_years = pd.DataFrame(oper_years)
+df_constr_years = pd.DataFrame(constr_years)
+
+#Gather construction and operation outputs into separate lists
+df_output_constr = df_output_cat[df_output_cat['type']=='construction']
+df_output_oper = df_output_cat[df_output_cat['type']=='operation']
+constr_outs = df_output_constr['output'].values.tolist()
+oper_outs = df_output_oper['output'].values.tolist()
+
+#Spread construction outputs over construction years, solve year t and t-1
+df_constr_cols = [i for i in df_full.columns.values.tolist() if i not in oper_outs]
+df_constr = df_full[df_constr_cols].copy()
+df_constr['out_type'] = 'construction'
+df_constr = df_constr[df_constr['type'] == 'new']
+constr_renames = {}
+for i,r in df_output_constr.iterrows():
+    constr_renames[r['output']] = r['subtype']+'_'+r['subsubtype']
+df_constr.rename(columns=constr_renames, inplace=True)
+df_constr = pd.merge(left=df_constr, right=df_constr_years, how='left', on=['year'], sort=False)
+#scale results by 1/2 to spread over two years
+scale_cols = constr_renames.values() + ['capacity', 'cost_capital', 'cost_om']
+df_constr.loc[:,scale_cols] = df_constr.loc[:,scale_cols]/2
+
+#Spread operation outputs over operation years, solve year t to t+lifetime
+oper_cols = [i for i in df_full.columns.values.tolist() if i not in constr_outs]
+df_oper = df_full[oper_cols].copy()
+df_oper['out_type'] = 'operation'
+oper_renames = {}
+for i,r in df_output_oper.iterrows():
+    oper_renames[r['output']] = r['subtype']+'_'+r['subsubtype']
+df_oper.rename(columns=oper_renames, inplace=True)
+df_oper = pd.merge(left=df_oper, right=df_oper_years, how='left', on=['type', 'tech', 'year'], sort=False)
+df_full = pd.concat([df_constr, df_oper], ignore_index=True)
+#sort and rearrange columns
+sortcols = ['jedi_scenario', 'tech', 'st', 'year', 'type', 'out_type', 'econ_year']
+othercols = [i for i in df_full.columns.values.tolist() if i not in sortcols]
+df_full = df_full[sortcols+othercols]
+df_full = df_full.sort_values(sortcols)
+df_full.to_csv(this_dir + r'\outputs\df_full_spread.csv', index=False)
+
+#now sum across solve years a
+df_full = df_full.groupby(['jedi_scenario', 'tech', 'st', 'type', 'out_type', 'econ_year'], as_index=False).sum()
+outcols = [i for i in df_full.columns.values.tolist() if i not in ['capacity', 'cost_capital', 'cost_om', 'year']]
+df_full = df_full[outcols]
+df_full.to_csv(this_dir + r'\outputs\df_full_final.csv', index=False)
