@@ -23,6 +23,7 @@ df_jedi_scenarios = pd.read_csv(this_dir + r'\inputs\jedi_scenarios.csv')
 df_variables = pd.read_csv(this_dir + r'\inputs\variables.csv')
 df_outputs = pd.read_csv(this_dir + r'\inputs\outputs.csv')
 df_output_cat = pd.read_csv(this_dir + r'\inputs\output_categories.csv')
+df_state_vals = pd.read_csv(this_dir + r'\inputs\state_vals.csv')
 
 df_full = dfs['Jedi']
 df_full.rename(columns={'bigQ': 'tech', 'allyears': 'year', 'jedi_cat': 'cat'}, inplace=True)
@@ -87,6 +88,7 @@ for x, tech in enumerate(df_techs['tech'].values.tolist()):
     df_var = df_variables[df_variables['tech']==tech]
     df_out = df_outputs[df_outputs['tech']==tech]
     df_out_oper = df_out[df_out['type']=='operation']
+    df_st_vals = df_state_vals[df_state_vals['tech']==tech]
 
     project_size = df_techs[df_techs['tech'] == tech]['project_size'].iloc[0] #MW
     
@@ -129,17 +131,26 @@ for x, tech in enumerate(df_techs['tech'].values.tolist()):
         #now, loop through df rows, fill in new capital and o&m cost, and get associated economic impacts
         c = 1
         for i, r in df_new.iterrows():
-            costs = {}
-            costs['cap_cost'] = r['cost_capital']/r['capacity']/1000
-            costs['om_cost'] = r['cost_om']/r['capacity']/1000
-            #set region as state if state_switch is True (WARNING: MAKE SURE ALL DATA IS MAPPED TO VALID STATES). Otherwise, United States will be used
-            if state_switch:
-                ws_in.Range('B13').Value = r['st'] #THIS NEEDS TO BE UPDATED TO USE CONSTANTS
             if c%10 == 0:
                 print(str(c) + '/'+str(len(df_new)))
-            #Set variable inputs
+            variables = {}
+            variables['st'] = r['st']
+            variables['cap_cost'] = r['cost_capital']/r['capacity']/1000
+            variables['om_cost'] = r['cost_om']/r['capacity']/1000
+            #TODO: MAKE SURE ALL DATA IS MAPPED TO VALID STATES.
             for j, ro in df_var.iterrows():
-                 ws_in.Range(ro['cell']).Value = costs[ro['cat']]
+                 ws_in.Range(ro['cell']).Value = variables[ro['cat']]
+            if not state_switch:
+                #grab state values
+                st_vals = {}
+                for j, ro in df_st_vals.iterrows():
+                    st_vals[j] = ws_in.Range(ro['cell']).Value
+                #reset region to UNITED STATES
+                for j, ro in df_var[df_var['cat']=='st'].iterrows():
+                     ws_in.Range(ro['cell']).Value = 'UNITED STATES'
+                #Paste state wages
+                for j, ro in df_st_vals.iterrows():
+                    ws_in.Range(ro['cell']).Value = st_vals[j]
             #grab the economic outputs and scale by project size
             mult = r['capacity']/project_size
             for j,ro in df_out.iterrows():
@@ -199,15 +210,16 @@ for i,r in df_output_oper.iterrows():
     oper_renames[r['output']] = r['subtype']+'_'+r['subsubtype']
 df_oper.rename(columns=oper_renames, inplace=True)
 df_oper = pd.merge(left=df_oper, right=df_oper_years, how='left', on=['type', 'tech', 'year'], sort=False)
+
+#Recombine construction and operation outputs, sort and rearrange columns
 df_full = pd.concat([df_constr, df_oper], ignore_index=True)
-#sort and rearrange columns
 sortcols = ['jedi_scenario', 'tech', 'st', 'year', 'type', 'out_type', 'econ_year']
 othercols = [i for i in df_full.columns.values.tolist() if i not in sortcols]
 df_full = df_full[sortcols+othercols]
 df_full = df_full.sort_values(sortcols)
 df_full.to_csv(this_dir + r'\outputs\df_full_spread.csv', index=False)
 
-#now sum across solve years a
+#now sum across solve years and remove unnecessary columns
 df_full = df_full.groupby(['jedi_scenario', 'tech', 'st', 'type', 'out_type', 'econ_year'], as_index=False).sum()
 outcols = [i for i in df_full.columns.values.tolist() if i not in ['capacity', 'cost_capital', 'cost_om', 'year']]
 df_full = df_full[outcols]

@@ -1,5 +1,7 @@
 tech,cat,cell,exist_val
 wind-ons,cap_cost,B20,2500
 wind-ons,om_cost,B21,64
+wind-ons,st,B13,UNITED STATES
 PV,cap_cost,B22,6907
 PV,om_cost,B23,40.17
+PV,st,B12,UNITED STATES
