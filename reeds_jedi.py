@@ -103,6 +103,19 @@ for x, tech in enumerate(df_techs['tech'].values.tolist()):
     #set constants
     for i, r in df_const.iterrows():
         ws_in.Range(r['cell']).Value = r['value']
+
+    #Gather wages and other state-level values
+    reg_cell = df_techs['reg_cell'][x]
+    st_vals = {}
+    for st in df_tech['st'].unique():
+        st_vals[st] = {}
+        ws_in.Range(reg_cell).Value = st
+        for j, ro in df_st_vals.iterrows():
+            st_vals[st][ro['desc']] = ws_in.Range(ro['cell']).Value
+    #reset region to united states
+    ws_in.Range(reg_cell).Value = 'UNITED STATES'
+    
+    #loop through jedi scenarios, set inputs, and gather economic outputs
     for scen_name in jedi_scenarios:
         print('scenario = ' + scen_name)
         #filter to correct jedi scenario
@@ -134,23 +147,18 @@ for x, tech in enumerate(df_techs['tech'].values.tolist()):
             if c%10 == 0:
                 print(str(c) + '/'+str(len(df_new)))
             variables = {}
-            variables['st'] = r['st']
             variables['cap_cost'] = r['cost_capital']/r['capacity']/1000
             variables['om_cost'] = r['cost_om']/r['capacity']/1000
             #TODO: MAKE SURE ALL DATA IS MAPPED TO VALID STATES.
             for j, ro in df_var.iterrows():
                  ws_in.Range(ro['cell']).Value = variables[ro['cat']]
-            if not state_switch:
-                #grab state values
-                st_vals = {}
+            #If we are using the state switch, simply select the state
+            if state_switch:
+                ws_in.Range(reg_cell).Value = r['st']
+            #If not, we need to manually enter state-level values
+            else:
                 for j, ro in df_st_vals.iterrows():
-                    st_vals[j] = ws_in.Range(ro['cell']).Value
-                #reset region to UNITED STATES
-                for j, ro in df_var[df_var['cat']=='st'].iterrows():
-                     ws_in.Range(ro['cell']).Value = 'UNITED STATES'
-                #Paste state wages
-                for j, ro in df_st_vals.iterrows():
-                    ws_in.Range(ro['cell']).Value = st_vals[j]
+                    ws_in.Range(ro['cell']).Value = st_vals[r['st']][ro['desc']]
             #grab the economic outputs and scale by project size
             mult = r['capacity']/project_size
             for j,ro in df_out.iterrows():

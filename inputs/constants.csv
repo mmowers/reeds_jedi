@@ -1,12 +1,12 @@
 tech,name,cell,value
-wind-ons,region,B13,United States
+wind-ons,region,B13,UNITED STATES
 wind-ons,year of construction,B15,2015
 wind-ons,project size (MW),B16,100
 wind-ons,number of projects,B17,1
 wind-ons,turbine size (kW),B18,3000
 wind-ons,dollar year,B22,2015
 wind-ons,use defaults?,B24,N
-PV,region,B12,United States
+PV,region,B12,UNITED STATES
 PV,year of construction,B14,2015
 PV,system application,B15,Utility
 PV,material,B16,Crystalline Silicon

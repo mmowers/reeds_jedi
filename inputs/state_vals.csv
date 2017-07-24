@@ -1,10 +1,10 @@
-tech,type,description,cell
-wind-ons,Construction,Foundation,B116
-wind-ons,Construction,Erection,B117
-wind-ons,Construction,Electrical,B118
-wind-ons,Construction,Management/Supervision,B119
-wind-ons,Operation,"Field Salaries (technicians, other)",B121
-wind-ons,Operation,Administrative,B122
-wind-ons,Operation,Management/Supervision,B123
-PV,Construction,Construction Workers / Installers,B81
-PV,Operation,Technicians,B83
+tech,desc,cell
+wind-ons,construction_foundation,B116
+wind-ons,construction_erection,B117
+wind-ons,construction_electrical,B118
+wind-ons,construction_management,B119
+wind-ons,operation_field_salaries,B121
+wind-ons,operation_admin,B122
+wind-ons,operation_management,B123
+PV,construction_workers,B81
+PV,operation_technicians,B83
