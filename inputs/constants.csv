@@ -6,6 +6,13 @@ wind-ons,number of projects,B17,1
 wind-ons,turbine size (kW),B18,3000
 wind-ons,dollar year,B22,2015
 wind-ons,use defaults?,B24,N
+wind-ons,debt local share,E92,0%
+wind-ons,equity individual investors local share,E97,0%
+wind-ons,equity corporate investors local share,E98,0%
+wind-ons,local taxes local share,E107,0%
+wind-ons,local sales tax local share,E108,0%
+wind-ons,construction sales tax,B63,0
+wind-ons,operation sales tax,B85,0
 PV,region,B12,UNITED STATES
 PV,year of construction,B14,2015
 PV,system application,B15,Utility
