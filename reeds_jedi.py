@@ -13,7 +13,7 @@ wbvis_switch = False
 this_dir = os.path.dirname(os.path.realpath(__file__))
 
 #get reeds output data
-dfs = gdxpds.to_dataframes(r"\\nrelqnap01d\ReEDS\FY17-JEDI-MRM\runs\JEDI 2017-07-20\gdxfiles\JEDI.gdx")
+dfs = gdxpds.to_dataframes(r"\\nrelqnap01d\ReEDS\FY17-JEDI-MRM\runs\JEDI 2017-07-29\gdxfiles\JEDI.gdx")
 
 #Read in workbook input csvs
 df_techs = pd.read_csv(this_dir + r'\inputs\techs.csv')
@@ -64,13 +64,8 @@ for scen_name in jedi_scenarios:
     df_temp = pd.concat([df_temp, df_full], ignore_index=True)
 df_full = df_temp
 
-#Make another column to distinguish new capacity from existing capacity that is retiring.
-df_full['type'] = 'new'
-df_full.loc[df_full['cat']=='exist_retire', 'type'] = 'exist_retire'
-df_full.loc[df_full['type']=='exist_retire', 'cat'] = 'capacity'
-
 #Now pivot to turn each row into its own input
-df_full = df_full.pivot_table(index=['jedi_scenario','tech','st', 'year','type'], columns='cat', values='Value').reset_index()
+df_full = df_full.pivot_table(index=['jedi_scenario','tech','st', 'year'], columns='cat', values='Value').reset_index()
 
 #add columns for outputs
 df_full = df_full.reindex(columns=df_full.columns.values.tolist() + df_output_cat['output'].values.tolist())
@@ -87,7 +82,6 @@ for x, tech in enumerate(df_techs['tech'].values.tolist()):
     df_jedi_scen = df_jedi_scenarios[df_jedi_scenarios['tech'] == tech]
     df_var = df_variables[df_variables['tech']==tech]
     df_out = df_outputs[df_outputs['tech']==tech]
-    df_out_oper = df_out[df_out['type']=='operation']
     df_st_vals = df_state_vals[df_state_vals['tech']==tech]
 
     project_size = df_techs[df_techs['tech'] == tech]['project_size'].iloc[0] #MW
@@ -123,35 +117,11 @@ for x, tech in enumerate(df_techs['tech'].values.tolist()):
         #fill in the local share cells
         for i, r in df_jedi_scen.iterrows():
             ws_in.Range(r['cell']).Value = r[scen_name]
-
-        #Do existing plants first
-        df_exist = df_scen[df_scen['type']=='exist_retire']
-        #set the inputs for existing plants
-        for i, r in df_var.iterrows():
-             ws_in.Range(r['cell']).Value = r['exist_val']
-        #Grab the operation outputs for existing plants
-        exist_out = {}
-        for i,r in df_out_oper.iterrows():
-            exist_out[r['output']] = float(ws_out.Range(r['cell']).Value)
-        #Now fill the dataframe with existing outputs, scaled by project size
-        for i, r in df_exist.iterrows():
-            mult = r['capacity']/project_size
-            for out in exist_out:
-                df_full.loc[i, out] = mult*exist_out[out]
-
-        #Now do new capacity
-        df_new = df_scen[df_scen['type']=='new']
         #now, loop through df rows, fill in new capital and o&m cost, and get associated economic impacts
         c = 1
-        for i, r in df_new.iterrows():
-            if c%10 == 0:
-                print(str(c) + '/'+str(len(df_new)))
-            variables = {}
-            variables['cap_cost'] = r['cost_capital']/r['capacity']/1000
-            variables['om_cost'] = r['cost_om']/r['capacity']/1000
-            #TODO: MAKE SURE ALL DATA IS MAPPED TO VALID STATES.
-            for j, ro in df_var.iterrows():
-                 ws_in.Range(ro['cell']).Value = variables[ro['cat']]
+        for i, r in df_scen.iterrows():
+            if c%100 == 0:
+                print(str(c) + '/'+str(len(df_scen)))
             #If we are using the state switch, simply select the state
             if state_switch:
                 ws_in.Range(reg_cell).Value = r['st']
@@ -159,76 +129,31 @@ for x, tech in enumerate(df_techs['tech'].values.tolist()):
             else:
                 for j, ro in df_st_vals.iterrows():
                     ws_in.Range(ro['cell']).Value = st_vals[r['st']][ro['desc']]
-            #grab the economic outputs and scale by project size
-            mult = r['capacity']/project_size
-            for j,ro in df_out.iterrows():
-                df_full.loc[i, ro['output']] = mult*float(ws_out.Range(ro['cell']).Value)
+            #Construction
+            if pd.notnull(r['capacity_new']):
+                #calculate input variables
+                constr_vars = {}
+                constr_vars['cap_cost'] = r['cost_capital']/r['capacity_new']/1000
+                #set inputs in workbook
+                for j, ro in df_var[df_var['type'] == 'construction'].iterrows():
+                    ws_in.Range(ro['cell']).Value = constr_vars[ro['cat']]
+                #gather outputs
+                mult = r['capacity_new']/project_size
+                for j,ro in df_out[df_out['type'] == 'construction'].iterrows():
+                    df_full.loc[i, ro['output']] = mult*float(ws_out.Range(ro['cell']).Value)
+            #Operation
+            if pd.notnull(r['capacity_cumulative']):
+                #calculate input variables
+                oper_vars = {}
+                oper_vars['om_cost'] = r['cost_om']/r['capacity_cumulative']/1000
+                #set inputs in workbook
+                for j, ro in df_var[df_var['type'] == 'operation'].iterrows():
+                    ws_in.Range(ro['cell']).Value = oper_vars[ro['cat']]
+                #gather outputs
+                mult = r['capacity_cumulative']/project_size
+                for j,ro in df_out[df_out['type'] == 'operation'].iterrows():
+                    df_full.loc[i, ro['output']] = mult*float(ws_out.Range(ro['cell']).Value)
             c = c + 1
     wb.Close(False)
 
-df_full.to_csv(this_dir + r'\outputs\df_full_pre_spread.csv', index=False)
-
-#Add dataframes to map solve years to construction years and operation years.
-solveyears = list(range(2010, 2052, 2))
-oper_years = {'type': [], 'tech': [], 'year': [], 'econ_year': []}
-constr_years = {'year':[], 'econ_year':[]}
-for y in solveyears:
-    constr_years['year'] += [y,y]
-    constr_years['econ_year'] += [y-1,y]
-    for i, r in df_techs.iterrows():
-        for j in range(2010, y-1):
-            oper_years['type'].append('exist_retire')
-            oper_years['tech'].append(r['tech'])
-            oper_years['year'].append(y)
-            oper_years['econ_year'].append(j)
-        for j in range(y, min(y + r['lifetime'], 2051)):
-            oper_years['type'].append('new')
-            oper_years['tech'].append(r['tech'])
-            oper_years['year'].append(y)
-            oper_years['econ_year'].append(j)
-df_oper_years = pd.DataFrame(oper_years)
-df_constr_years = pd.DataFrame(constr_years)
-
-#Gather construction and operation outputs into separate lists
-df_output_constr = df_output_cat[df_output_cat['type']=='construction']
-df_output_oper = df_output_cat[df_output_cat['type']=='operation']
-constr_outs = df_output_constr['output'].values.tolist()
-oper_outs = df_output_oper['output'].values.tolist()
-
-#Spread construction outputs over construction years, solve year t and t-1
-df_constr_cols = [i for i in df_full.columns.values.tolist() if i not in oper_outs]
-df_constr = df_full[df_constr_cols].copy()
-df_constr['out_type'] = 'construction'
-df_constr = df_constr[df_constr['type'] == 'new']
-constr_renames = {}
-for i,r in df_output_constr.iterrows():
-    constr_renames[r['output']] = r['subtype']+'_'+r['subsubtype']
-df_constr.rename(columns=constr_renames, inplace=True)
-df_constr = pd.merge(left=df_constr, right=df_constr_years, how='left', on=['year'], sort=False)
-#scale results by 1/2 to spread over two years
-scale_cols = constr_renames.values() + ['capacity', 'cost_capital', 'cost_om']
-df_constr.loc[:,scale_cols] = df_constr.loc[:,scale_cols]/2
-
-#Spread operation outputs over operation years, solve year t to t+lifetime
-oper_cols = [i for i in df_full.columns.values.tolist() if i not in constr_outs]
-df_oper = df_full[oper_cols].copy()
-df_oper['out_type'] = 'operation'
-oper_renames = {}
-for i,r in df_output_oper.iterrows():
-    oper_renames[r['output']] = r['subtype']+'_'+r['subsubtype']
-df_oper.rename(columns=oper_renames, inplace=True)
-df_oper = pd.merge(left=df_oper, right=df_oper_years, how='left', on=['type', 'tech', 'year'], sort=False)
-
-#Recombine construction and operation outputs, sort and rearrange columns
-df_full = pd.concat([df_constr, df_oper], ignore_index=True)
-sortcols = ['jedi_scenario', 'tech', 'st', 'year', 'type', 'out_type', 'econ_year']
-othercols = [i for i in df_full.columns.values.tolist() if i not in sortcols]
-df_full = df_full[sortcols+othercols]
-df_full = df_full.sort_values(sortcols)
-df_full.to_csv(this_dir + r'\outputs\df_full_spread.csv', index=False)
-
-#now sum across solve years and remove unnecessary columns
-df_full = df_full.groupby(['jedi_scenario', 'tech', 'st', 'type', 'out_type', 'econ_year'], as_index=False).sum()
-outcols = [i for i in df_full.columns.values.tolist() if i not in ['capacity', 'cost_capital', 'cost_om', 'year']]
-df_full = df_full[outcols]
-df_full.to_csv(this_dir + r'\outputs\df_full_final.csv', index=False)
+df_full.to_csv(this_dir + r'\outputs\df_full.csv', index=False)
