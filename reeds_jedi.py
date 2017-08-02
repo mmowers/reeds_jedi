@@ -14,7 +14,7 @@ state_vals_switch = True
 this_dir = os.path.dirname(os.path.realpath(__file__))
 
 #get reeds output data
-dfs = gdxpds.to_dataframes(r"\\nrelqnap01d\ReEDS\FY17-JEDI-MRM\runs\JEDI 2017-07-29\gdxfiles\JEDI.gdx")
+dfs = gdxpds.to_dataframes(r"\\nrelqnap01d\ReEDS\FY17-JEDI-MRM-jedi\runs\JEDI 2017-08-02\gdxfiles\JEDI.gdx")
 
 #Read in workbook input csvs
 df_techs = pd.read_csv(this_dir + r'\inputs\techs.csv')
