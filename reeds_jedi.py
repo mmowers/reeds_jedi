@@ -10,6 +10,7 @@ test_switch = False
 state_switch = False
 wbvis_switch = False
 state_vals_switch = True
+om_adjust_switch = True
 
 this_dir = os.path.dirname(os.path.realpath(__file__))
 
@@ -25,6 +26,7 @@ df_variables = pd.read_csv(this_dir + r'\inputs\variables.csv')
 df_outputs = pd.read_csv(this_dir + r'\inputs\outputs.csv')
 df_output_cat = pd.read_csv(this_dir + r'\inputs\output_categories.csv')
 df_state_vals = pd.read_csv(this_dir + r'\inputs\state_vals.csv')
+df_om_adjust = pd.read_csv(this_dir + r'\inputs\om_adjust.csv')
 
 df_full = dfs['Jedi']
 df_full.rename(columns={'bigQ': 'tech', 'allyears': 'year', 'jedi_cat': 'cat'}, inplace=True)
@@ -84,9 +86,9 @@ for x, tech in enumerate(df_techs['tech'].values.tolist()):
     df_var = df_variables[df_variables['tech']==tech]
     df_out = df_outputs[df_outputs['tech']==tech]
     df_st_vals = df_state_vals[df_state_vals['tech']==tech]
-
+    df_om_adj = df_om_adjust[df_om_adjust['tech']==tech]
     project_size = df_techs[df_techs['tech'] == tech]['project_size'].iloc[0] #MW
-    
+
     #first, open jedi workbook
     excel = win32.Dispatch('Excel.Application')
     if wbvis_switch:
@@ -98,6 +100,13 @@ for x, tech in enumerate(df_techs['tech'].values.tolist()):
     #set constants
     for i, r in df_const.iterrows():
         ws_in.Range(r['cell']).Value = r['value']
+
+    #Make adjustment to O&M based on property taxes, lease payments, etc.
+    om_adjust = 0
+    if om_adjust_switch == True:
+        for i, r in df_om_adj.iterrows():
+            ws_in.Range(r['cell']).Value = r['value']
+            om_adjust += r['value']/(project_size*1000) #$/kW
 
     #Gather wages and other state-level values
     reg_cell = df_techs['reg_cell'][x]
@@ -146,7 +155,7 @@ for x, tech in enumerate(df_techs['tech'].values.tolist()):
             if pd.notnull(r['capacity_cumulative']):
                 #calculate input variables
                 oper_vars = {}
-                oper_vars['om_cost'] = r['cost_om']/r['capacity_cumulative']/1000
+                oper_vars['om_cost'] = r['cost_om']/r['capacity_cumulative']/1000 - om_adjust
                 #set inputs in workbook
                 for j, ro in df_var[df_var['type'] == 'operation'].iterrows():
                     ws_in.Range(ro['cell']).Value = oper_vars[ro['cat']]
