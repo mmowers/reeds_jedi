@@ -9,6 +9,7 @@ import sys
 test_switch = False
 state_switch = False
 wbvis_switch = False
+state_vals_switch = True
 
 this_dir = os.path.dirname(os.path.realpath(__file__))
 
@@ -126,7 +127,7 @@ for x, tech in enumerate(df_techs['tech'].values.tolist()):
             if state_switch:
                 ws_in.Range(reg_cell).Value = r['st']
             #If not, we need to manually enter state-level values
-            else:
+            elif state_vals_switch == True:
                 for j, ro in df_st_vals.iterrows():
                     ws_in.Range(ro['cell']).Value = st_vals[r['st']][ro['desc']]
             #Construction
