@@ -9,9 +9,9 @@ wind-ons,use defaults?,B24,N
 wind-ons,construction sales tax,B63,0
 wind-ons,operation sales tax,B85,0
 wind-ons,other taxes/payments,B86,0
-wind-ons,local taxes,B107,400000
+wind-ons,local taxes,B107,0
 wind-ons,land lease cost per turbine,B110,0
-wind-ons,land lease total cost,B112,300000
+wind-ons,land lease total cost,B112,0
 wind-ons,debt local share,E92,0%
 wind-ons,equity individual investors local share,E97,0%
 wind-ons,equity corporate investors local share,E98,0%
