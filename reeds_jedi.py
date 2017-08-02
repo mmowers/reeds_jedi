@@ -52,7 +52,7 @@ df_full = df_full[df_full['year'] > 2016]
 
 #Test filter
 if test_switch:
-    df_full = df_full[df_full['st'] == 'IOWA']
+    df_full = df_full[df_full['st'] == 'ALABAMA']
 
 #group and sum. Aggregate n to state in the process
 df_full = df_full.groupby(['tech', 'st', 'year', 'cat'], as_index=False).sum()
