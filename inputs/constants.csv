@@ -27,3 +27,9 @@ PV,average system size (kW),B18,1000
 PV,number of systems,B19,100
 PV,dollar year,B24,2015
 PV,use defaults?,B26,N
+PV,construction sales tax,B48,0
+PV,operation sales tax,B61,0
+PV,local taxes,B76,0
+PV,debt local share,D67,0%
+PV,local taxes local share,D76,100%
+PV,local sales tax local share,D77,0%
