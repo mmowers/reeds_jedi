@@ -45,10 +45,12 @@ if not df_unmapped.empty:
     print(df_unmapped)
     sys.exit("unmapped regions shown above!")
 
-#limit to only 2017 and after, and only US
+#limit to only 2016 and after, and only US, and remove techs we aren't using
 df_full = df_full[df_full['st'] != 'MEXICO']
 df_full['year'] = df_full['year'].astype(int)
-df_full = df_full[df_full['year'] > 2016]
+df_full = df_full[df_full['year'] >= 2016]
+tech_list = df_techs['tech'].values.tolist()
+df_full = df_full[df_full['tech'].isin(tech_list)]
 
 #Test filter
 if test_switch:
@@ -68,16 +70,20 @@ for scen_name in jedi_scenarios:
 df_full = df_temp
 
 #Now pivot to turn each row into its own input
-df_full = df_full.pivot_table(index=['jedi_scenario','tech','st', 'year'], columns='cat', values='Value').reset_index()
+index_cols = ['jedi_scenario','tech','st', 'year']
+df_full = df_full.pivot_table(index=index_cols, columns='cat', values='Value').reset_index()
+
+df_full.to_csv(this_dir + r'\outputs\df_in.csv', index=False)
 
 #add columns for outputs
-df_full = df_full.reindex(columns=df_full.columns.values.tolist() + df_output_cat['output'].values.tolist())
+output_cols = df_output_cat['output'].values.tolist()
+df_full = df_full.reindex(columns=df_full.columns.values.tolist() + output_cols)
 
 #join output categories to outputs
 df_outputs = pd.merge(left=df_outputs, right=df_output_cat, how='left', on=['output'], sort=False)
 
 #loop through techs
-for x, tech in enumerate(df_techs['tech'].values.tolist()):
+for x, tech in enumerate(tech_list):
     print('tech = ' + tech)
     #filter to just this tech
     df_tech = df_full[df_full['tech'] == tech]
@@ -166,4 +172,30 @@ for x, tech in enumerate(df_techs['tech'].values.tolist()):
             c = c + 1
     wb.Close(False)
 
-df_full.to_csv(this_dir + r'\outputs\df_full.csv', index=False)
+#Remove inputs from output dataframe
+df_full = df_full[index_cols + output_cols]
+#Now adjust to account for non-solve years
+min_year = df_full['year'].min()
+max_year = df_full['year'].max()
+#Reshape dataframe so that years are columns and output categories are rows
+df_full = pd.melt(df_full, id_vars=index_cols, value_vars=output_cols, var_name='output', value_name= 'value')
+index_cols.remove('year')
+df_full = df_full.pivot_table(index=index_cols+['output'], columns='year', values='value').reset_index()
+df_full.columns.name = None
+#merge with output categories
+df_full = pd.merge(left=df_full, right=df_output_cat, how='left', on=['output'], sort=False)
+#For construction, solve year t econimic outputs are halved, and the remaining half is assigned to non-solve year t-1
+years = list(range(min_year, max_year+2, 2))
+constr_rows = df_full['type'] == 'construction'
+df_full.loc[constr_rows, years] = df_full.loc[constr_rows, years]/2
+#now add the odd years and fill
+oper_rows = df_full['type'] == 'operation'
+for y in list(range(min_year+1, max_year+1, 2)):
+    #default to construction, where non-solve year t is the same as solve year t+1
+    df_full[y] = df_full[y+1]
+    #For operation, non-solve year t econimic outputs are the average of solve years t-1 and t+1
+    df_full.loc[oper_rows, y] = (df_full.loc[oper_rows, y-1] + df_full.loc[oper_rows, y+1])/2
+df_full = pd.melt(df_full, id_vars=index_cols+df_output_cat.columns.values.tolist(), value_vars=list(range(min_year, max_year+1)), var_name='year', value_name= 'value')
+#df_full = df_full.reindex(columns = index_cols+df_output_cat.columns.values.tolist()+list(range(min_year, max_year+1)))
+df_full = df_full[pd.notnull(df_full['value'])]
+df_full.to_csv(this_dir + r'\outputs\df_out.csv', index=False)

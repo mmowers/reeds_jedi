@@ -1,4 +1,4 @@
-output,type,subtype,subsubtype
+output,type,outtype,directtype
 construction_jobs_direct,construction,jobs,direct
 construction_jobs_indirect,construction,jobs,indirect
 construction_jobs_induced,construction,jobs,induced
