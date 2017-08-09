@@ -182,6 +182,7 @@ df_full = pd.melt(df_full, id_vars=index_cols, value_vars=output_cols, var_name=
 index_cols.remove('year')
 df_full = df_full.pivot_table(index=index_cols+['output'], columns='year', values='value').reset_index()
 df_full.columns.name = None
+df_full.fillna(0, inplace=True)
 #merge with output categories
 df_full = pd.merge(left=df_full, right=df_output_cat, how='left', on=['output'], sort=False)
 #For construction, solve year t econimic outputs are halved, and the remaining half is assigned to non-solve year t-1
