@@ -12,6 +12,8 @@ wbvis_switch = False
 state_vals_switch = True
 om_adjust_switch = True
 
+jedi_scenarios = ['Low']
+
 this_dir = os.path.dirname(os.path.realpath(__file__))
 
 #get reeds output data
@@ -60,8 +62,6 @@ if test_switch:
 df_full = df_full.groupby(['tech', 'st', 'year', 'cat'], as_index=False).sum()
 
 #concatenate dataframe for each jedi scenario
-#read in array of local shares. Scenarios start in the 6th column (index=5)
-jedi_scenarios = df_jedi_scenarios.columns.values.tolist()[5:]
 df_full = df_full.reindex(columns=['jedi_scenario'] + df_full.columns.values.tolist())
 df_temp = pd.DataFrame() #temporary
 for scen_name in jedi_scenarios:
