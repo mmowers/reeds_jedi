@@ -41,6 +41,3 @@ PV,Construction,Other,Business Overhead,E45,100%,100%
 PV,Operation,Labor,Technicians,E54,100%,100%
 PV,Operation,Materials_Services,Materials & Equipment,E58,100%,100%
 PV,Operation,Materials_Services,Services,E59,100%,100%
-PV,Other,Debt,Percentage Financed,D67,0%,0%
-PV,Other,Tax,Local Property Taxes,D76,100%,100%
-PV,Other,Tax,Local Sales Tax Rate,D77,100%,100%
