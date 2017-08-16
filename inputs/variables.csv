@@ -3,3 +3,5 @@ wind-ons,construction,cap_cost,B20
 wind-ons,operation,om_cost,B21
 PV,construction,cap_cost,B22
 PV,operation,om_cost,B23
+gas-CC,construction,cap_cost,B19
+gas-CC,operation,om_cost,B22

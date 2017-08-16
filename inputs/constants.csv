@@ -33,3 +33,21 @@ PV,local taxes,B76,0
 PV,debt local share,D67,0%
 PV,local taxes local share,D76,100%
 PV,local sales tax local share,D77,0%
+gas-CC,region,B13,UNITED STATES
+gas-CC,year of construction,B14,2015
+gas-CC,project size (MW),B15,500
+gas-CC,construction period (mo),B18,36
+gas-CC,fuel produced locally,B21,100%
+gas-CC,dollar year,B24,2015
+gas-CC,use defaults?,B26,N
+gas-CC,construction sales tax,B53,0
+gas-CC,operation sales tax,B72,0
+gas-CC,other taxes/payments,B73,0
+gas-CC,local taxes,B93,0
+gas-CC,land lease total cost,B96,0
+gas-CC,debt local share,D79,0%
+gas-CC,equity individual investors local share,D84,0%
+gas-CC,equity corporate investors local share,D85,0%
+gas-CC,local taxes local share,D93,100%
+gas-CC,local sales tax local share,D94,0%
+gas-CC,lease payment,D97,100%
