@@ -1,3 +1,3 @@
 tech,name,cell,value
-wind-ons,local taxes,B107,400000
-wind-ons,land lease total cost,B112,300000
+wind,local taxes,B107,400000
+wind,land lease total cost,B112,300000

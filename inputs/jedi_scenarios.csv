@@ -1,62 +1,62 @@
 tech,type,subtype,description,cell,Low,High
-wind-ons,Construction,Equipment,Turbines (excluding blades and towers),E33,20%,50%
-wind-ons,Construction,Equipment,Blades,E34,60%,90%
-wind-ons,Construction,Equipment,Towers,E35,50%,90%
-wind-ons,Construction,Equipment,Transportation,E36,90%,90%
-wind-ons,Construction,Materials,"Construction (concrete, rebar, equip, roads and site prep)",E40,80%,95%
-wind-ons,Construction,Materials,Transformer,E41,80%,95%
-wind-ons,Construction,Materials,"Electrical (drop cable, wire, )",E42,80%,95%
-wind-ons,Construction,Materials,HV line extension,E43,80%,95%
-wind-ons,Construction,Labor,Foundation,E46,100%,100%
-wind-ons,Construction,Labor,Erection,E47,100%,100%
-wind-ons,Construction,Labor,Electrical,E48,100%,100%
-wind-ons,Construction,Labor,Management/Supervision,E49,100%,100%
-wind-ons,Construction,Labor,Misc.,E50,100%,100%
-wind-ons,Construction,Other,HV Materials,E54,80%,95%
-wind-ons,Construction,Other,HV Labor,E55,100%,100%
-wind-ons,Construction,Other,Engineering,E56,80%,95%
-wind-ons,Construction,Other,Legal Services,E57,100%,100%
-wind-ons,Construction,Other,Land Easements,E58,100%,100%
-wind-ons,Construction,Other,Site Certificate/Permitting,E59,100%,100%
-wind-ons,Operation,Labor,Field Salaries,E71,100%,100%
-wind-ons,Operation,Labor,Administrative,E72,100%,100%
-wind-ons,Operation,Labor,Management,E73,100%,100%
-wind-ons,Operation,Materials_Services,Vehicles,E76,100%,100%
-wind-ons,Operation,Materials_Services,Site Maint/Misc. Services,E77,80%,95%
-wind-ons,Operation,Materials_Services,"Fees, Permits, Licenses",E78,100%,100%
-wind-ons,Operation,Materials_Services,Utilities,E79,100%,100%
-wind-ons,Operation,Materials_Services,Insurance,E80,65%,93%
-wind-ons,Operation,Materials_Services,Fuel (motor vehicle gasoline),E81,100%,100%
-wind-ons,Operation,Materials_Services,Consumables/Tools and Misc. Supplies,E82,100%,100%
-wind-ons,Operation,Materials_Services,Replacement Parts/Equipment/ Spare Parts Inventory,E83,30%,60%
-wind-ons,Operation,Other,Other Taxes/Payments,E86,100%,100%
-PV,Construction,Equipment,Mounting,E33,100%,100%
-PV,Construction,Equipment,Modules,E34,100%,100%
-PV,Construction,Equipment,Electrical,E35,100%,100%
-PV,Construction,Equipment,Inverter,E36,100%,100%
-PV,Construction,Labor,Installation,E39,100%,100%
-PV,Construction,Other,Permitting,E43,100%,100%
-PV,Construction,Other,Other,E44,100%,100%
-PV,Construction,Other,Business Overhead,E45,100%,100%
-PV,Operation,Labor,Technicians,E54,100%,100%
-PV,Operation,Materials_Services,Materials & Equipment,E58,100%,100%
-PV,Operation,Materials_Services,Services,E59,100%,100%
-gas-CC,Construction,Equipment,Power Generation,E34,100%,100%
-gas-CC,Construction,Equipment,General Facilities,E35,100%,100%
-gas-CC,Construction,Equipment,Plant Equipment,E36,100%,100%
-gas-CC,Construction,Labor,Construction Labor,E39,100%,100%
-gas-CC,Construction,Labor,Project management,E40,100%,100%
-gas-CC,Construction,Labor,Construction Utilities,E41,100%,100%
-gas-CC,Construction,Other,Engineering/Design,E45,100%,100%
-gas-CC,Construction,Other,Construction insurance,E46,100%,100%
-gas-CC,Construction,Other,Land,E47,100%,100%
-gas-CC,Construction,Other,Permitting Fees,E48,100%,100%
-gas-CC,Construction,Other,Grid intertie,E49,100%,100%
-gas-CC,Construction,Other,Spare Parts,E50,100%,100%
-gas-CC,Operation,Fixed,Labor,E60,100%,100%
-gas-CC,Operation,Fixed,Materials,E61,100%,100%
-gas-CC,Operation,Fixed,Services,E62,100%,100%
-gas-CC,Operation,Variable,Routine Turbine Maintenance,E67,100%,100%
-gas-CC,Operation,Variable,Water,E68,100%,100%
-gas-CC,Operation,Variable,Catalysts & chemicals,E69,100%,100%
-gas-CC,Operation,Variable,Other Taxes/Payments,E73,100%,100%
+wind,Construction,Equipment,Turbines (excluding blades and towers),E33,20%,50%
+wind,Construction,Equipment,Blades,E34,60%,90%
+wind,Construction,Equipment,Towers,E35,50%,90%
+wind,Construction,Equipment,Transportation,E36,90%,90%
+wind,Construction,Materials,"Construction (concrete, rebar, equip, roads and site prep)",E40,80%,95%
+wind,Construction,Materials,Transformer,E41,80%,95%
+wind,Construction,Materials,"Electrical (drop cable, wire, )",E42,80%,95%
+wind,Construction,Materials,HV line extension,E43,80%,95%
+wind,Construction,Labor,Foundation,E46,100%,100%
+wind,Construction,Labor,Erection,E47,100%,100%
+wind,Construction,Labor,Electrical,E48,100%,100%
+wind,Construction,Labor,Management/Supervision,E49,100%,100%
+wind,Construction,Labor,Misc.,E50,100%,100%
+wind,Construction,Other,HV Materials,E54,80%,95%
+wind,Construction,Other,HV Labor,E55,100%,100%
+wind,Construction,Other,Engineering,E56,80%,95%
+wind,Construction,Other,Legal Services,E57,100%,100%
+wind,Construction,Other,Land Easements,E58,100%,100%
+wind,Construction,Other,Site Certificate/Permitting,E59,100%,100%
+wind,Operation,Labor,Field Salaries,E71,100%,100%
+wind,Operation,Labor,Administrative,E72,100%,100%
+wind,Operation,Labor,Management,E73,100%,100%
+wind,Operation,Materials_Services,Vehicles,E76,100%,100%
+wind,Operation,Materials_Services,Site Maint/Misc. Services,E77,80%,95%
+wind,Operation,Materials_Services,"Fees, Permits, Licenses",E78,100%,100%
+wind,Operation,Materials_Services,Utilities,E79,100%,100%
+wind,Operation,Materials_Services,Insurance,E80,65%,93%
+wind,Operation,Materials_Services,Fuel (motor vehicle gasoline),E81,100%,100%
+wind,Operation,Materials_Services,Consumables/Tools and Misc. Supplies,E82,100%,100%
+wind,Operation,Materials_Services,Replacement Parts/Equipment/ Spare Parts Inventory,E83,30%,60%
+wind,Operation,Other,Other Taxes/Payments,E86,100%,100%
+upv,Construction,Equipment,Mounting,E33,100%,100%
+upv,Construction,Equipment,Modules,E34,100%,100%
+upv,Construction,Equipment,Electrical,E35,100%,100%
+upv,Construction,Equipment,Inverter,E36,100%,100%
+upv,Construction,Labor,Installation,E39,100%,100%
+upv,Construction,Other,Permitting,E43,100%,100%
+upv,Construction,Other,Other,E44,100%,100%
+upv,Construction,Other,Business Overhead,E45,100%,100%
+upv,Operation,Labor,Technicians,E54,100%,100%
+upv,Operation,Materials_Services,Materials & Equipment,E58,100%,100%
+upv,Operation,Materials_Services,Services,E59,100%,100%
+gas,Construction,Equipment,Power Generation,E34,100%,100%
+gas,Construction,Equipment,General Facilities,E35,100%,100%
+gas,Construction,Equipment,Plant Equipment,E36,100%,100%
+gas,Construction,Labor,Construction Labor,E39,100%,100%
+gas,Construction,Labor,Project management,E40,100%,100%
+gas,Construction,Labor,Construction Utilities,E41,100%,100%
+gas,Construction,Other,Engineering/Design,E45,100%,100%
+gas,Construction,Other,Construction insurance,E46,100%,100%
+gas,Construction,Other,Land,E47,100%,100%
+gas,Construction,Other,Permitting Fees,E48,100%,100%
+gas,Construction,Other,Grid intertie,E49,100%,100%
+gas,Construction,Other,Spare Parts,E50,100%,100%
+gas,Operation,Fixed,Labor,E60,100%,100%
+gas,Operation,Fixed,Materials,E61,100%,100%
+gas,Operation,Fixed,Services,E62,100%,100%
+gas,Operation,Variable,Routine Turbine Maintenance,E67,100%,100%
+gas,Operation,Variable,Water,E68,100%,100%
+gas,Operation,Variable,Catalysts & chemicals,E69,100%,100%
+gas,Operation,Variable,Other Taxes/Payments,E73,100%,100%

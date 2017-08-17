@@ -17,7 +17,7 @@ jedi_scenarios = ['Low']
 this_dir = os.path.dirname(os.path.realpath(__file__))
 
 #get reeds output data
-dfs = gdxpds.to_dataframes(r"\\nrelqnap01d\ReEDS\FY17-JEDI-MRM-jedi\runs\JEDI 2017-08-16\gdxfiles\JEDI.gdx")
+dfs = gdxpds.to_dataframes(r"\\nrelqnap01d\ReEDS\FY17-JEDI-MRM-jedi\runs\JEDI 2017-08-17b\gdxfiles\JEDI.gdx")
 
 #Read in workbook input csvs
 df_techs = pd.read_csv(this_dir + r'\inputs\techs.csv')
@@ -31,7 +31,11 @@ df_state_vals = pd.read_csv(this_dir + r'\inputs\state_vals.csv')
 df_om_adjust = pd.read_csv(this_dir + r'\inputs\om_adjust.csv')
 
 df_full = dfs['Jedi']
-df_full.rename(columns={'bigQ': 'tech', 'allyears': 'year', 'jedi_cat': 'cat'}, inplace=True)
+df_full.rename(columns={'jedi_tech': 'tech', 'allyears': 'year', 'jedi_cat': 'cat'}, inplace=True)
+
+#convert text columns to lower case
+df_full['tech'] = df_full['tech'].str.lower()
+df_full['cat'] = df_full['cat'].str.lower()
 
 #convert costs from 2004$ to 2015$
 cost_cols = ['cost_capital', 'cost_om', 'cost_fuel', 'cost_var_om']
