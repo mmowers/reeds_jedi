@@ -166,7 +166,7 @@ for x, tech in enumerate(tech_list):
                 if pd.notnull(r['generation']):
                     oper_vars['var_om_cost'] = r['cost_var_om']/r['generation']
                     oper_vars['fuel_cost'] = r['cost_fuel']/r['fuel_use']
-                    oper_vars['heat_rate'] = r['fuel_use']/r['generation']
+                    oper_vars['heat_rate'] = r['fuel_use']/r['generation']*1000
                     oper_vars['capacity_factor'] = r['generation']/(8760*r['capacity_cumulative'])
                 #set inputs in workbook
                 for j, ro in df_var[df_var['type'] == 'operation'].iterrows():
