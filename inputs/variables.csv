@@ -5,3 +5,7 @@ PV,construction,cap_cost,B22
 PV,operation,om_cost,B23
 gas-CC,construction,cap_cost,B19
 gas-CC,operation,om_cost,B22
+gas-CC,operation,var_om_cost,B23
+gas-CC,operation,fuel_cost,B20
+gas-CC,operation,heat_rate,B17
+gas-CC,operation,capacity_factor,B16

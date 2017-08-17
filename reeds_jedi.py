@@ -17,7 +17,7 @@ jedi_scenarios = ['Low']
 this_dir = os.path.dirname(os.path.realpath(__file__))
 
 #get reeds output data
-dfs = gdxpds.to_dataframes(r"\\nrelqnap01d\ReEDS\FY17-JEDI-MRM-jedi\runs\JEDI 2017-08-15\gdxfiles\JEDI.gdx")
+dfs = gdxpds.to_dataframes(r"\\nrelqnap01d\ReEDS\FY17-JEDI-MRM-jedi\runs\JEDI 2017-08-16\gdxfiles\JEDI.gdx")
 
 #Read in workbook input csvs
 df_techs = pd.read_csv(this_dir + r'\inputs\techs.csv')
@@ -34,7 +34,7 @@ df_full = dfs['Jedi']
 df_full.rename(columns={'bigQ': 'tech', 'allyears': 'year', 'jedi_cat': 'cat'}, inplace=True)
 
 #convert costs from 2004$ to 2015$
-cost_cols = ['cost_capital', 'cost_om']
+cost_cols = ['cost_capital', 'cost_om', 'cost_fuel', 'cost_var_om']
 row_criteria = df_full['cat'].isin(cost_cols)
 df_full.loc[row_criteria, 'Value'] = df_full.loc[row_criteria, 'Value'] / 0.796636801524834
 
@@ -162,6 +162,12 @@ for x, tech in enumerate(tech_list):
                 #calculate input variables
                 oper_vars = {}
                 oper_vars['om_cost'] = r['cost_om']/r['capacity_cumulative']/1000 - om_adjust
+                #for techs that have fuel cost, var om, etc:
+                if pd.notnull(r['generation']):
+                    oper_vars['var_om_cost'] = r['cost_var_om']/r['generation']
+                    oper_vars['fuel_cost'] = r['cost_fuel']/r['fuel_use']
+                    oper_vars['heat_rate'] = r['fuel_use']/r['generation']
+                    oper_vars['capacity_factor'] = r['generation']/(8760*r['capacity_cumulative'])
                 #set inputs in workbook
                 for j, ro in df_var[df_var['type'] == 'operation'].iterrows():
                     ws_in.Range(ro['cell']).Value = oper_vars[ro['cat']]
