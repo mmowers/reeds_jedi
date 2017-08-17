@@ -167,6 +167,10 @@ for x, tech in enumerate(tech_list):
                 oper_vars = {}
                 oper_vars['om_cost'] = r['cost_om']/r['capacity_cumulative']/1000 - om_adjust
                 #for techs that have fuel cost, var om, etc:
+                oper_vars['var_om_cost'] = 0
+                oper_vars['fuel_cost'] = 0
+                oper_vars['heat_rate'] = 0
+                oper_vars['capacity_factor'] = 0
                 if pd.notnull(r['generation']):
                     oper_vars['var_om_cost'] = r['cost_var_om']/r['generation']
                     oper_vars['fuel_cost'] = r['cost_fuel']/r['fuel_use']
