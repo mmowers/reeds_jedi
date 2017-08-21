@@ -3,9 +3,9 @@ wind,construction,cap_cost,B20
 wind,operation,om_cost,B21
 upv,construction,cap_cost,B22
 upv,operation,om_cost,B23
+gas,operation,capacity_factor,B16
+gas,operation,heat_rate,B17
 gas,construction,cap_cost,B19
+gas,operation,fuel_cost,B20
 gas,operation,om_cost,B22
 gas,operation,var_om_cost,B23
-gas,operation,fuel_cost,B20
-gas,operation,heat_rate,B17
-gas,operation,capacity_factor,B16

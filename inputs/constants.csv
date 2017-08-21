@@ -50,4 +50,4 @@ gas,equity individual investors local share,D84,0%
 gas,equity corporate investors local share,D85,0%
 gas,local taxes local share,D93,100%
 gas,local sales tax local share,D94,0%
-gas,lease payment,D97,100%
+gas,lease payment local share,D97,100%
