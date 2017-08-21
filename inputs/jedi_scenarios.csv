@@ -65,3 +65,22 @@ gas,Operation,Variable,Routine Turbine Maintenance,E67,100%,100%
 gas,Operation,Variable,Water,E68,100%,100%
 gas,Operation,Variable,Catalysts & chemicals,E69,100%,100%
 gas,Operation,Variable,Other Taxes/Payments,E73,100%,100%
+coal,Construction,Equipment,Power Generation,E35,100%,100%
+coal,Construction,Equipment,General Facilities,E36,100%,100%
+coal,Construction,Equipment,Plant Equipment,E37,100%,100%
+coal,Construction,Labor,Construction Labor,E40,100%,100%
+coal,Construction,Labor,Project management,E41,100%,100%
+coal,Construction,Other,Engineering/Design,E45,100%,100%
+coal,Construction,Other,Construction insurance,E46,100%,100%
+coal,Construction,Other,Land,E47,100%,100%
+coal,Construction,Other,Catalysts & chemicals,E48,100%,100%
+coal,Construction,Other,Grid intertie,E49,100%,100%
+coal,Construction,Other,Owner costs,E50,100%,100%
+coal,Construction,Other,Legal and Advisory,E51,100%,100%
+coal,Construction,Other,Spare Parts,E52,100%,100%
+coal,Operation,Fixed,Labor,E60,100%,100%
+coal,Operation,Fixed,Materials,E61,100%,100%
+coal,Operation,Fixed,Services,E62,100%,100%
+coal,Operation,Variable,Ash/Sludge Disposal,E67,100%,100%
+coal,Operation,Variable,Water,E68,100%,100%
+coal,Operation,Variable,Catalysts & chemicals,E69,100%,100%

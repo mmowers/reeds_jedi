@@ -9,3 +9,9 @@ gas,construction,cap_cost,B19
 gas,operation,fuel_cost,B20
 gas,operation,om_cost,B22
 gas,operation,var_om_cost,B23
+coal,operation,capacity_factor,B17
+coal,operation,heat_rate,B18
+coal,construction,cap_cost,B20
+coal,operation,fuel_cost,B21
+coal,operation,om_cost,B23
+coal,operation,var_om_cost,B24

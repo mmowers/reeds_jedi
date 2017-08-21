@@ -51,3 +51,18 @@ gas,equity corporate investors local share,D85,0%
 gas,local taxes local share,D93,100%
 gas,local sales tax local share,D94,0%
 gas,lease payment local share,D97,100%
+coal,region,B13,UNITED STATES
+coal,year of construction,B15,2015
+coal,project size (MW),B16,600
+coal,construction period (mo),B19,55
+coal,fuel produced locally,B22,100%
+coal,dollar year,B25,2015
+coal,use defaults?,B27,N
+coal,local tax rate,B88,0%
+coal,local taxes,B92,0
+coal,land lease total cost,B94,0
+coal,debt local share,D78,0%
+coal,equity individual investors local share,D83,0%
+coal,equity corporate investors local share,D84,0%
+coal,local taxes local share,D92,100%
+coal,lease payment local share,D95,100%
