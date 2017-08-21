@@ -34,6 +34,10 @@ upv,Construction,Equipment,Mounting,E33,100%,100%
 upv,Construction,Equipment,Modules,E34,100%,100%
 upv,Construction,Equipment,Electrical,E35,100%,100%
 upv,Construction,Equipment,Inverter,E36,100%,100%
+upv,Construction,Equipment,Mounting Manufactured Locally,F33,N,N
+upv,Construction,Equipment,Modules Manufactured Locally,F34,N,N
+upv,Construction,Equipment,Electrical Manufactured Locally,F35,Y,Y
+upv,Construction,Equipment,Inverter Manufactured Locally,F36,N,N
 upv,Construction,Labor,Installation,E39,100%,100%
 upv,Construction,Other,Permitting,E43,100%,100%
 upv,Construction,Other,Other,E44,100%,100%
@@ -41,6 +45,7 @@ upv,Construction,Other,Business Overhead,E45,100%,100%
 upv,Operation,Labor,Technicians,E54,100%,100%
 upv,Operation,Materials_Services,Materials & Equipment,E58,100%,100%
 upv,Operation,Materials_Services,Services,E59,100%,100%
+upv,Operation,Materials_Services,Materials & Equipment Manufactured Locally,F58,N,N
 gas,Construction,Equipment,Power Generation,E34,100%,100%
 gas,Construction,Equipment,General Facilities,E35,100%,100%
 gas,Construction,Equipment,Plant Equipment,E36,100%,100%
