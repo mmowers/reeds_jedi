@@ -17,9 +17,10 @@ jedi_scenarios = ['Low']
 this_dir = os.path.dirname(os.path.realpath(__file__))
 
 #get reeds output data
-dfs = gdxpds.to_dataframes(r"\\nrelqnap01d\ReEDS\FY17-JEDI-MRM-jedi\runs\JEDI 2017-08-17b\gdxfiles\JEDI.gdx")
+dfs = gdxpds.to_dataframes(r"\\nrelqnap01d\ReEDS\FY17-JEDI-MRM-jedi\runs\JEDI 2017-08-19\gdxfiles\JEDI.gdx")
 
 #Read in workbook input csvs
+df_tech_map = pd.read_csv(this_dir + r'\inputs\tech_map.csv')
 df_techs = pd.read_csv(this_dir + r'\inputs\techs.csv')
 df_hierarchy = pd.read_csv(this_dir + r'\inputs\hierarchy.csv')
 df_constants = pd.read_csv(this_dir + r'\inputs\constants.csv')
@@ -31,11 +32,15 @@ df_state_vals = pd.read_csv(this_dir + r'\inputs\state_vals.csv')
 df_om_adjust = pd.read_csv(this_dir + r'\inputs\om_adjust.csv')
 
 df_full = dfs['Jedi']
-df_full.rename(columns={'jedi_tech': 'tech', 'allyears': 'year', 'jedi_cat': 'cat'}, inplace=True)
+df_full.rename(columns={'allyears': 'year', 'jedi_cat': 'cat'}, inplace=True)
 
 #convert text columns to lower case
-df_full['tech'] = df_full['tech'].str.lower()
+df_full['bigQ'] = df_full['bigQ'].str.lower()
 df_full['cat'] = df_full['cat'].str.lower()
+
+#join with tech mapping
+df_full = pd.merge(left=df_full, right=df_tech_map, how='inner', on=['bigQ'], sort=False)
+df_full = df_full.drop('bigQ', 1)
 
 #convert costs from 2004$ to 2015$
 cost_cols = ['cost_capital', 'cost_om', 'cost_fuel', 'cost_var_om']
