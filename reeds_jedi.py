@@ -237,7 +237,7 @@ for jedi_gdx in jedi_gdxs:
         df_full.loc[oper_rows, y] = (df_full.loc[oper_rows, y-1] + df_full.loc[oper_rows, y+1])/2
     #melt back to flat dataframe
     df_full = pd.melt(df_full, id_vars=index_cols+df_output_cat.columns.values.tolist(), value_vars=list(range(min_year, max_year+1)), var_name='year', value_name= 'value')
-    df_full = df_full[pd.notnull(df_full['value'])]
+    df_full = df_full[(pd.notnull(df_full['value'])) & (df_full['value'] != 0)]
     df_full.to_csv(this_dir + r'\outputs\df_out.csv', index=False)
     gdx_params = {'JEDI': df_full}
     gdxpds.to_gdx(gdx_params, os.path.dirname(jedi_gdx)+'/JEDI_out.gdx')
