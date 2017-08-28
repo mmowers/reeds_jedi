@@ -166,7 +166,7 @@ for x, tech in enumerate(tech_list):
                 #gather outputs
                 mult = r['capacity_new']/project_size
                 for j,ro in df_out[df_out['type'] == 'construction'].iterrows():
-                    df_full.loc[i, ro['output']] = mult*float(ws_out.Range(ro['cell']).Value)
+                    df_full.loc[i, ro['output']] = mult*float(ws_out.Range(ro['cell']).Value)*ro['scale']
             #Operation
             if pd.notnull(r['capacity_cumulative']):
                 #calculate input variables
@@ -188,7 +188,7 @@ for x, tech in enumerate(tech_list):
                 #gather outputs
                 mult = r['capacity_cumulative']/project_size
                 for j,ro in df_out[df_out['type'] == 'operation'].iterrows():
-                    df_full.loc[i, ro['output']] = mult*float(ws_out.Range(ro['cell']).Value)
+                    df_full.loc[i, ro['output']] = mult*float(ws_out.Range(ro['cell']).Value)*ro['scale']
             c = c + 1
     wb.Close(False)
 
