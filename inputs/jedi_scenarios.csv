@@ -31,7 +31,7 @@ wind,Operation,Materials_Services,Consumables/Tools and Misc. Supplies,E82,100%,
 wind,Operation,Materials_Services,Replacement Parts/Equipment/ Spare Parts Inventory,E83,30%,60%
 wind,Operation,Other,Other Taxes/Payments,E86,100%,100%
 upv,Construction,Equipment,Mounting,E33,100%,100%
-upv,Construction,Equipment,Modules,E34,100%,100%
+upv,Construction,Equipment,Modules,E34,5%,5%
 upv,Construction,Equipment,Electrical,E35,100%,100%
 upv,Construction,Equipment,Inverter,E36,100%,100%
 upv,Construction,Equipment,Mounting Manufactured Locally,F33,N,N
