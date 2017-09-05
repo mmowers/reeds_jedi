@@ -103,7 +103,7 @@ for jedi_gdx in jedi_gdxs:
     
     df_full.to_csv(this_dir + r'\outputs\df_in.csv', index=False)
     
-    #add columns for outputs
+    #add columns for each output
     output_cols = df_output_cat['output'].values.tolist()
     df_full = df_full.reindex(columns=df_full.columns.values.tolist() + output_cols)
 
@@ -210,13 +210,13 @@ for jedi_gdx in jedi_gdxs:
     
     #Map to reeds states (Washington DC will be mapped to maryland)
     df_full = pd.merge(left=df_full, right=df_state_map, how='inner', on=['state_plus_dc'], sort=False)
-    #Remove inputs from output dataframe
     index_cols.insert(index_cols.index('state_plus_dc'),'st')
+    #Remove inputs from output dataframe
     df_full = df_full[index_cols + output_cols]
     #Now adjust to account for non-solve years
     min_year = df_full['year'].min()
     max_year = df_full['year'].max()
-    #Reshape dataframe so that years are columns and output categories are rows
+    #Reshape dataframe so that years are columns and outputs are rows
     df_full = pd.melt(df_full, id_vars=index_cols, value_vars=output_cols, var_name='output', value_name= 'value')
     index_cols.remove('year')
     df_full = df_full.pivot_table(index=index_cols+['output'], columns='year', values='value').reset_index()
@@ -237,6 +237,7 @@ for jedi_gdx in jedi_gdxs:
         df_full.loc[oper_rows, y] = (df_full.loc[oper_rows, y-1] + df_full.loc[oper_rows, y+1])/2
     #melt back to flat dataframe
     df_full = pd.melt(df_full, id_vars=index_cols+df_output_cat.columns.values.tolist(), value_vars=list(range(min_year, max_year+1)), var_name='year', value_name= 'value')
+    #remove null and zero value rows
     df_full = df_full[(pd.notnull(df_full['value'])) & (df_full['value'] != 0)]
     df_full.to_csv(this_dir + r'\outputs\df_out.csv', index=False)
     gdx_params = {'JEDI': df_full}
