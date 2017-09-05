@@ -12,7 +12,7 @@ wbvis_switch = False
 state_vals_switch = True
 om_adjust_switch = True
 
-jedi_scenarios = ['Low']
+jedi_scenarios = ['High']
 
 this_dir = os.path.dirname(os.path.realpath(__file__))
 
@@ -239,6 +239,8 @@ for jedi_gdx in jedi_gdxs:
     df_full = pd.melt(df_full, id_vars=index_cols+df_output_cat.columns.values.tolist(), value_vars=list(range(min_year, max_year+1)), var_name='year', value_name= 'value')
     #remove null and zero value rows
     df_full = df_full[(pd.notnull(df_full['value'])) & (df_full['value'] != 0)]
+    #drop output column because it is redundant with the output category columns
+    df_full = df_full.drop('output', 1)
     df_full.to_csv(this_dir + r'\outputs\df_out.csv', index=False)
     gdx_params = {'JEDI': df_full}
     gdxpds.to_gdx(gdx_params, os.path.dirname(jedi_gdx)+'/JEDI_out.gdx')
