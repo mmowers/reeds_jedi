@@ -26,7 +26,6 @@ if not os.path.isdir(path):
 df_tech_map = pd.read_csv(this_dir + r'\inputs\tech_map.csv')
 df_techs = pd.read_csv(this_dir + r'\inputs\techs.csv')
 df_hierarchy = pd.read_csv(this_dir + r'\inputs\hierarchy.csv')
-df_state_map = pd.read_csv(this_dir + r'\inputs\state_map.csv')
 df_constants = pd.read_csv(this_dir + r'\inputs\constants.csv')
 df_jedi_scenarios = pd.read_csv(this_dir + r'\inputs\jedi_scenarios.csv')
 df_variables = pd.read_csv(this_dir + r'\inputs\variables.csv')
@@ -208,10 +207,7 @@ for jedi_gdx in jedi_gdxs:
                         df_full.loc[i, ro['output']] = mult*float(ws_out.Range(ro['cell']).Value)*ro['scale']
                 c = c + 1
         wb.Close(False)
-    
-    #Map to reeds states (Washington DC will be mapped to maryland)
-    df_full = pd.merge(left=df_full, right=df_state_map, how='inner', on=['state_plus_dc'], sort=False)
-    index_cols.insert(index_cols.index('state_plus_dc'),'st')
+
     #Remove inputs from output dataframe
     df_full = df_full[index_cols + output_cols]
     #Now adjust to account for non-solve years
