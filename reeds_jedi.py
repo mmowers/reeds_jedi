@@ -1,3 +1,4 @@
+#This script needs to be run  with python 3.4 as we are using GAMS 24.7 (see https://github.com/NREL/gdx-pandas)
 from __future__ import division
 import gdxpds
 import pandas as pd
