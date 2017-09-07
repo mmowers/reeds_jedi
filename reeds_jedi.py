@@ -208,6 +208,9 @@ for jedi_gdx in jedi_gdxs:
                 c = c + 1
         wb.Close(False)
 
+    #Output csv with both inputs and outputs
+    df_full.to_csv(this_dir + r'\outputs\df_inout.csv', index=False)
+
     #Remove inputs from output dataframe
     df_full = df_full[index_cols + output_cols]
     #Now adjust to account for non-solve years
