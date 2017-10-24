@@ -6,13 +6,12 @@ import win32com.client as win32
 import os
 import sys
 
-#switches
+#Switches
 test_switch = False #Default False. True runs the code for Alabama only
 state_switch = False #Default False. True runs the analysis selecting the appropriate state, which results in state-level local shares etc.
 wbvis_switch = False #Default False. True makes the excel workbooks visible. This is for testing purposes only.
 state_vals_switch = True #Default True. True uses certain state-level values (e.g. wages) to reflect regional multipliers in ReEDS.
 om_adjust_switch = True #Default True. True adjusts O&M to account for property taxes and lease payments, etc.
-
 jedi_scenarios = ['High']
 
 this_dir = os.path.dirname(os.path.realpath(__file__))
