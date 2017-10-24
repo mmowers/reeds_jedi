@@ -15,7 +15,7 @@ cd "C:\Users\mmowers\AppData\Local\Continuum\Anaconda3\Scripts"
 conda create -n myenv34 python=3.4
 activate myenv34
 ```
--- Note that I didn't have Anaconda3\Scripts\ added to my PATH, hence the navigation to \Anaconda3\Scripts in this code snippet.
+- Note that I didn't have Anaconda3\Scripts\ added to my PATH, hence the navigation to \Anaconda3\Scripts in this code snippet.
 - Now everytime you want to use myenv34 for installing packages, running python, and running .py scripts like reeds_jedi.py, you'll have to activate the environment. Again, if Anaconda3\Scripts\ is not added to your PATH, you'll have to navigate to Anaconda3\Scripts\ to activate the environment.
 - With myenv34 activated, install pandas and pywin32 packages with:
 ```bash
