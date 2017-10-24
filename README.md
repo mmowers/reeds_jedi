@@ -17,14 +17,13 @@ activate myenv34
 ```
 -- Note that I didn't have Anaconda3\Scripts\ added to my PATH, hence the navigation to \Anaconda3\Scripts in this code snippet.
 - Now everytime you want to use myenv34 for installing packages, running python, and running .py scripts like reeds_jedi.py, you'll have to activate the environment. Again, if Anaconda3\Scripts\ is not added to your PATH, you'll have to navigate to Anaconda3\Scripts\ to activate the environment.
-- With myenv34 activated:
--- install pandas and pywin32 packages with:
+- With myenv34 activated, install pandas and pywin32 packages with:
 ```bash
 conda install pandas pywin32
 ```
--- Follow Elaine Hale's instructions at https://github.com/NREL/gdx-pandas#install to install GAMS python 3.4 bindings and gdx-pandas.
+- Follow Elaine Hale's instructions at https://github.com/NREL/gdx-pandas#install to install GAMS python 3.4 bindings and gdx-pandas.
 
-##File Structure
+## File Structure
 - reeds_jedi.py: This is the main script. It opens the jedi technology workbooks, iteratively enters ReEDS inputs from each JEDI.gdx, and collects the outputs in each JEDI_out.gdx. A set of switches at the top of this file allow for different behavior of the script (see comments for each switch).
 - inputs/
 -- reeds_scenarios.csv: Path(s) to ReEDS run directories or directories of ReEDS run directories
