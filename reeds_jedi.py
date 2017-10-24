@@ -40,11 +40,15 @@ df_outputs = pd.merge(left=df_outputs, right=df_output_cat, how='left', on=['out
 #gather jedi gdxs from reeds scenarios
 jedi_gdxs = [] 
 if os.path.isfile(path+'/gdxfiles/JEDI.gdx'):
+    if os.path.isfile(path+'/gdxfiles/JEDI_out.gdx'):
+        sys.exit(path+'/gdxfiles/JEDI_out.gdx already exists. Please remove or rename it to continue.')
     jedi_gdxs.append(path+'/gdxfiles/JEDI.gdx')
 else:
     subdirs = next(os.walk(path))[1]
     for subdir in subdirs:
         if os.path.isfile(path+'/'+subdir+'/gdxfiles/JEDI.gdx'):
+            if os.path.isfile(path+'/'+subdir+'/gdxfiles/JEDI_out.gdx'):
+                sys.exit(path+'/'+subdir+'/gdxfiles/JEDI_out.gdx already exists. Please remove or rename it to continue.')
             jedi_gdxs.append(path+'/'+subdir+'/gdxfiles/JEDI.gdx')
 
 for jedi_gdx in jedi_gdxs:
