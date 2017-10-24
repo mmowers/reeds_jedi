@@ -17,12 +17,8 @@ jedi_scenarios = ['High']
 
 this_dir = os.path.dirname(os.path.realpath(__file__))
 
-#path to either a reeds directory, or a directory of reeds directories.
-path = r"\\nrelqnap01d\ReEDS\FY17-JEDI-MRM-jedi\runs\2017-08-22 runs"
-if not os.path.isdir(path):
-    sys.exit("path entered is not a directory!")
-
 #Read in workbook input csvs
+df_reeds_scenarios = pd.read_csv(this_dir + r'\inputs\reeds_scenarios.csv')
 df_tech_map = pd.read_csv(this_dir + r'\inputs\tech_map.csv')
 df_techs = pd.read_csv(this_dir + r'\inputs\techs.csv')
 df_hierarchy = pd.read_csv(this_dir + r'\inputs\hierarchy.csv')
@@ -33,23 +29,26 @@ df_outputs = pd.read_csv(this_dir + r'\inputs\outputs.csv')
 df_output_cat = pd.read_csv(this_dir + r'\inputs\output_categories.csv')
 df_state_vals = pd.read_csv(this_dir + r'\inputs\state_vals.csv')
 df_om_adjust = pd.read_csv(this_dir + r'\inputs\om_adjust.csv')
-
 #join output categories to outputs
 df_outputs = pd.merge(left=df_outputs, right=df_output_cat, how='left', on=['output'], sort=False)
 
-#gather jedi gdxs from reeds scenarios
-jedi_gdxs = [] 
-if os.path.isfile(path+'/gdxfiles/JEDI.gdx'):
-    if os.path.isfile(path+'/gdxfiles/JEDI_out.gdx'):
-        sys.exit(path+'/gdxfiles/JEDI_out.gdx already exists. Please remove or rename it to continue.')
-    jedi_gdxs.append(path+'/gdxfiles/JEDI.gdx')
-else:
-    subdirs = next(os.walk(path))[1]
-    for subdir in subdirs:
-        if os.path.isfile(path+'/'+subdir+'/gdxfiles/JEDI.gdx'):
-            if os.path.isfile(path+'/'+subdir+'/gdxfiles/JEDI_out.gdx'):
-                sys.exit(path+'/'+subdir+'/gdxfiles/JEDI_out.gdx already exists. Please remove or rename it to continue.')
-            jedi_gdxs.append(path+'/'+subdir+'/gdxfiles/JEDI.gdx')
+jedi_gdxs = []
+#Each path is an individual ReEDS run directory or a directory of ReEDS run directories.
+for path in df_reeds_scenarios['directories'].values.tolist():
+    #gather jedi gdxs from reeds scenarios
+    if not os.path.isdir(path):
+        sys.exit("path entered is not a directory!")
+    if os.path.isfile(path+'/gdxfiles/JEDI.gdx'):
+        if os.path.isfile(path+'/gdxfiles/JEDI_out.gdx'):
+            sys.exit(path+'/gdxfiles/JEDI_out.gdx already exists. Please remove or rename it to continue.')
+        jedi_gdxs.append(path+'/gdxfiles/JEDI.gdx')
+    else:
+        subdirs = next(os.walk(path))[1]
+        for subdir in subdirs:
+            if os.path.isfile(path+'/'+subdir+'/gdxfiles/JEDI.gdx'):
+                if os.path.isfile(path+'/'+subdir+'/gdxfiles/JEDI_out.gdx'):
+                    sys.exit(path+'/'+subdir+'/gdxfiles/JEDI_out.gdx already exists. Please remove or rename it to continue.')
+                jedi_gdxs.append(path+'/'+subdir+'/gdxfiles/JEDI.gdx')
 
 for jedi_gdx in jedi_gdxs:
     print(jedi_gdx)
